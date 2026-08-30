@@ -139,15 +139,15 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
             variants={childVariants} 
             className="text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight leading-[1.1] text-transparent bg-clip-text bg-gradient-to-b from-black to-black/70 dark:from-white dark:to-white/60 transition-all duration-1000"
           >
-            Controla las finanzas de tu <br />
-            <span className="text-black dark:text-white transition-colors duration-1000">emprendimiento hoy mismo.</span>
+            Controla tus finanzas personales y de tu <br />
+            <span className="text-black dark:text-white transition-colors duration-1000">emprendimiento en un solo lugar.</span>
           </motion.h1>
 
           <motion.p 
             variants={childVariants} 
             className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto font-light leading-relaxed text-black/60 dark:text-white/60 transition-colors duration-1000"
           >
-            Una plataforma moderna y minimalista diseñada para emprendedores y empresas. Gestiona flujos de caja, cuentas y pagos en un solo lugar bajo el ecosistema financiero Aurora.
+            Una plataforma minimalista diseñada para personas de a pie y pequeños negocios. Gestiona ingresos, presupuestos y flujos de caja bajo el ecosistema financiero Aurora.
           </motion.p>
 
           <motion.div 
@@ -293,17 +293,17 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
       {/* 5. Pricing / Planes Section */}
       <section id="pricing" className="py-24 max-w-6xl mx-auto px-6 relative z-10 text-black dark:text-white transition-colors duration-1000">
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Comienza a escalar tu negocio.</h2>
-          <p className="text-black/60 dark:text-white/60 font-light">Elige el plan ideal para tus operaciones. Cambia o cancela cuando quieras.</p>
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Elige el plan ideal para ti.</h2>
+          <p className="text-black/60 dark:text-white/60 font-light">Toma el control de tus finanzas personales o las de tu negocio. Cancela cuando quieras.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-          {/* Plan 1 */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {/* Plan 1: Básico */}
           <div className="p-8 rounded-2xl bg-white dark:bg-black border border-black/10 dark:border-white/10 text-black dark:text-white space-y-6 relative flex flex-col justify-between transition-colors duration-1000">
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-bold">Plan Emprendedor</h3>
-                <p className="text-xs text-black/40 dark:text-white/40">Para pequeños negocios e independientes.</p>
+                <h3 className="text-lg font-bold">Registro Básico</h3>
+                <p className="text-xs text-black/40 dark:text-white/40">Control personal con limitaciones.</p>
               </div>
               <div className="flex items-baseline">
                 <span className="text-4xl font-mono font-bold">$0</span>
@@ -312,15 +312,15 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
               <ul className="space-y-3 text-sm text-black/70 dark:text-white/70">
                 <li className="flex items-center space-x-2">
                   <Check className="w-4 h-4 text-black dark:text-white" />
+                  <span>30 transacciones al mes</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <Check className="w-4 h-4 text-black dark:text-white" />
                   <span>1 cuenta financiera</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <Check className="w-4 h-4 text-black dark:text-white" />
-                  <span>Seguimiento de flujo de caja</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <Check className="w-4 h-4 text-black dark:text-white" />
-                  <span>Reportes en PDF básicos</span>
+                  <span>Dashboard visual básico</span>
                 </li>
               </ul>
             </div>
@@ -332,36 +332,77 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
             </button>
           </div>
 
-          {/* Plan 2 */}
-          <div className="p-8 rounded-2xl bg-black dark:bg-white text-white dark:text-black space-y-6 relative flex flex-col justify-between shadow-2xl transition-colors duration-1000">
-            <div className="absolute -top-3 right-6 bg-white dark:bg-black text-black dark:text-white text-[10px] uppercase font-mono tracking-widest px-3 py-1 rounded-xl border border-black/10 dark:border-white/10">
-              Popular
+          {/* Plan 2: Personal Pro */}
+          <div className="p-8 rounded-2xl bg-white dark:bg-brand-gray/30 border border-black/20 dark:border-white/20 text-black dark:text-white space-y-6 relative flex flex-col justify-between shadow-lg transition-colors duration-1000">
+            <div className="absolute -top-3 right-6 bg-black text-white dark:bg-white dark:text-black text-[9px] uppercase font-mono tracking-wider px-2.5 py-0.5 rounded-xl border border-black/10 dark:border-white/10">
+              Recomendado
             </div>
             <div className="space-y-4">
               <div>
-                <h3 className="text-lg font-bold">Plan Lumina Pro</h3>
-                <p className="text-xs text-white/50 dark:text-black/50">Para empresas y emprendimientos en expansión.</p>
+                <h3 className="text-lg font-bold">Personal Pro</h3>
+                <p className="text-xs text-black/50 dark:text-white/40">Uso individual ilimitado.</p>
               </div>
               <div className="flex items-baseline">
-                <span className="text-4xl font-mono font-bold">$15</span>
-                <span className="text-sm text-white/50 dark:text-black/50 ml-2">/ al mes</span>
+                <span className="text-4xl font-mono font-bold">$3</span>
+                <span className="text-sm text-black/50 dark:text-white/40 ml-2">/ al mes</span>
+              </div>
+              <ul className="space-y-3 text-sm text-black/70 dark:text-white/70">
+                <li className="flex items-center space-x-2">
+                  <Check className="w-4 h-4 text-black dark:text-white" />
+                  <span>Transacciones ilimitadas</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <Check className="w-4 h-4 text-black dark:text-white" />
+                  <span>Cuentas y monederos ilimitados</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <Check className="w-4 h-4 text-black dark:text-white" />
+                  <span>Categorías personalizadas</span>
+                </li>
+                <li className="flex items-center space-x-2">
+                  <Check className="w-4 h-4 text-black dark:text-white" />
+                  <span>Exportar reportes en PDF</span>
+                </li>
+              </ul>
+            </div>
+            <button 
+              onClick={() => onNavigate('register')}
+              className="w-full h-11 bg-black text-white dark:bg-white dark:text-black hover:bg-black/90 dark:hover:bg-white/90 text-sm font-semibold rounded-xl transition-all duration-200"
+            >
+              Adquirir Pro
+            </button>
+          </div>
+
+          {/* Plan 3: Pequeño Emprendedor */}
+          <div className="p-8 rounded-2xl bg-black dark:bg-white text-white dark:text-black space-y-6 relative flex flex-col justify-between shadow-2xl transition-colors duration-1000">
+            <div className="absolute -top-3 right-6 bg-white dark:bg-black text-black dark:text-white text-[9px] uppercase font-mono tracking-wider px-2.5 py-0.5 rounded-xl border border-black/10 dark:border-white/10">
+              3 Meses Gratis
+            </div>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-lg font-bold">Pequeño Emprendedor</h3>
+                <p className="text-xs text-white/50 dark:text-black/50">Para negocios e independientes.</p>
+              </div>
+              <div className="flex items-baseline">
+                <span className="text-4xl font-mono font-bold">$10</span>
+                <span className="text-sm text-white/50 dark:text-black/50 ml-2">/ al mes (tras la prueba)</span>
               </div>
               <ul className="space-y-3 text-sm text-white/80 dark:text-black/80">
                 <li className="flex items-center space-x-2">
                   <Check className="w-4 h-4 text-white dark:text-black" />
-                  <span>Cuentas ilimitadas</span>
+                  <span>Separación Personal vs Negocio</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <Check className="w-4 h-4 text-white dark:text-black" />
-                  <span>Integración de cobros con Yappy</span>
+                  <span>Cobros integrados con Yappy</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <Check className="w-4 h-4 text-white dark:text-black" />
-                  <span>Análisis de IA y presupuestos</span>
+                  <span>Reportes contables (P&L)</span>
                 </li>
                 <li className="flex items-center space-x-2">
                   <Check className="w-4 h-4 text-white dark:text-black" />
-                  <span>Soporte prioritario 24/7</span>
+                  <span>Análisis inteligente con IA</span>
                 </li>
               </ul>
             </div>
@@ -369,7 +410,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
               onClick={() => onNavigate('register')}
               className="w-full h-11 bg-white dark:bg-black text-black dark:text-white hover:bg-white/90 dark:hover:bg-black/90 text-sm font-semibold rounded-xl transition-all duration-200"
             >
-              Probar Pro Gratis (30 días)
+              Probar 3 Meses Gratis
             </button>
           </div>
         </div>
