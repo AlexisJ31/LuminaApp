@@ -1,0 +1,27 @@
+<svg viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Efecto de brillo de luz (Glow) usando filtro SVG estándar -->
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComponentTransfer in="blur" result="glow">
+        <feFuncA type="linear" slope="0.8" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode in="glow" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Grupo con el filtro de brillo aplicado (puedes remover el filter="..." para el logo plano) -->
+  <g filter="url(#glow)">
+    <!-- Círculo izquierdo -->
+    <circle cx="38" cy="30" r="20" stroke="#FBBF24" stroke-width="3.5" />
+    
+    <!-- Círculo derecho -->
+    <circle cx="62" cy="30" r="20" stroke="#FBBF24" stroke-width="3.5" />
+    
+    <!-- Parche de entrelazado perfecto (Arco de círculo izquierdo sobre el derecho en la intersección superior) -->
+    <path d="M 46 11.7 A 20 20 0 0 1 54 18" stroke="#FBBF24" stroke-width="3.5" stroke-linecap="butt" />
+  </g>
+</svg>
