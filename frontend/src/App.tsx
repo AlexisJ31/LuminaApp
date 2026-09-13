@@ -8,6 +8,9 @@ import DashboardView from './components/portal/DashboardView';
 import TransactionsReviewCard from './components/portal/TransactionsReviewCard';
 import BudgetRings from './components/portal/BudgetRings';
 import TransactionModal from './components/portal/TransactionModal';
+import TransactionsView from './components/portal/TransactionsView';
+import RecurringsView from './components/portal/RecurringsView';
+import SettingsView from './components/portal/SettingsView';
 
 export default function App() {
   const [view, setView] = useState<'landing' | 'register' | 'login' | 'portal'>('landing');
@@ -61,17 +64,10 @@ export default function App() {
 
         {portalTab === 'dashboard' && <DashboardView />}
         {portalTab === 'review' && <TransactionsReviewCard />}
+        {portalTab === 'transactions' && <TransactionsView />}
+        {portalTab === 'recurrings' && <RecurringsView />}
         {portalTab === 'budgets' && <BudgetRings />}
-        {portalTab !== 'dashboard' && portalTab !== 'review' && portalTab !== 'budgets' && (
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-            <h2 className="text-xl font-semibold text-white tracking-tight mb-2">
-              Sección: <span className="text-emerald-400 capitalize">{portalTab}</span>
-            </h2>
-            <p className="text-sm text-white/60">
-              Esta sección está conectada al backend y responderá dinámicamente.
-            </p>
-          </div>
-        )}
+        {portalTab === 'settings' && <SettingsView />}
       </UserLayout>
     );
   }
