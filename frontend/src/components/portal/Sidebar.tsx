@@ -35,7 +35,7 @@ export default function Sidebar({ currentTab, onTabChange, unreviewedCount = 3 }
   ];
 
   return (
-    <aside className="hidden lg:flex flex-col w-64 sticky top-0 h-screen bg-[#080A0F] border-r border-white/5 text-white/80 p-4 select-none shrink-0 overflow-y-auto">
+    <aside className="hidden lg:flex flex-col w-64 h-full bg-[#080A0F] border-r border-white/5 text-white/80 p-4 select-none shrink-0 overflow-y-auto">
       
       {/* Brand Header */}
       <div className="flex items-center space-x-3 px-2 py-3 mb-4 cursor-pointer" onClick={() => onTabChange('dashboard')}>
