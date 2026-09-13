@@ -12,6 +12,8 @@ import TransactionsView from './components/portal/TransactionsView';
 import RecurringsView from './components/portal/RecurringsView';
 import SettingsView from './components/portal/SettingsView';
 
+import { FinanceProvider } from './context/FinanceContext';
+
 export default function App() {
   const [view, setView] = useState<'landing' | 'register' | 'login' | 'portal'>('landing');
   const [portalTab, setPortalTab] = useState<string>('dashboard');
@@ -49,26 +51,28 @@ export default function App() {
   // Render Portal del Usuario
   if (view === 'portal') {
     return (
-      <UserLayout
-        currentTab={portalTab}
-        onTabChange={setPortalTab}
-        onOpenNewTransaction={() => setIsNewTxModalOpen(true)}
-        onNavigateHome={() => setView('landing')}
-        isDarkMode={isDarkMode}
-        toggleTheme={toggleTheme}
-      >
-        <TransactionModal 
-          isOpen={isNewTxModalOpen} 
-          onClose={() => setIsNewTxModalOpen(false)} 
-        />
+      <FinanceProvider>
+        <UserLayout
+          currentTab={portalTab}
+          onTabChange={setPortalTab}
+          onOpenNewTransaction={() => setIsNewTxModalOpen(true)}
+          onNavigateHome={() => setView('landing')}
+          isDarkMode={isDarkMode}
+          toggleTheme={toggleTheme}
+        >
+          <TransactionModal 
+            isOpen={isNewTxModalOpen} 
+            onClose={() => setIsNewTxModalOpen(false)} 
+          />
 
-        {portalTab === 'dashboard' && <DashboardView />}
-        {portalTab === 'review' && <TransactionsReviewCard />}
-        {portalTab === 'transactions' && <TransactionsView />}
-        {portalTab === 'recurrings' && <RecurringsView />}
-        {portalTab === 'budgets' && <BudgetRings />}
-        {portalTab === 'settings' && <SettingsView />}
-      </UserLayout>
+          {portalTab === 'dashboard' && <DashboardView />}
+          {portalTab === 'review' && <TransactionsReviewCard />}
+          {portalTab === 'transactions' && <TransactionsView />}
+          {portalTab === 'recurrings' && <RecurringsView />}
+          {portalTab === 'budgets' && <BudgetRings />}
+          {portalTab === 'settings' && <SettingsView />}
+        </UserLayout>
+      </FinanceProvider>
     );
   }
 

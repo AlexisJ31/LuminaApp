@@ -1,55 +1,70 @@
 import { motion } from 'motion/react';
 
 interface LuminaLogoProps {
-  isGlowing: boolean;
+  isGlowing?: boolean;
   className?: string;
 }
 
-export default function LuminaLogo({ isGlowing, className = "w-10 h-6" }: LuminaLogoProps) {
-  const strokeColor = isGlowing ? "#FBBF24" : "#000000"; // Usamos un amarillo/ámbar un poco más claro y brillante para el modo encendido
-
+export default function LuminaLogo({ isGlowing = true, className = "w-9 h-6" }: LuminaLogoProps) {
   return (
     <motion.svg 
       viewBox="0 0 100 60" 
-      className={`${className}`}
+      className={`${className} shrink-0 overflow-visible`}
       fill="none" 
       xmlns="http://www.w3.org/2000/svg"
-      // Aplicamos el drop-shadow de CSS acelerado por hardware para un efecto de brillo/alumbrado real y compatible
       animate={{ 
-        filter: isGlowing ? "drop-shadow(0px 0px 8px rgba(251, 191, 36, 0.8))" : "drop-shadow(0px 0px 0px rgba(0,0,0,0))"
+        filter: isGlowing 
+          ? "drop-shadow(0px 0px 10px rgba(16, 185, 129, 0.75)) drop-shadow(0px 0px 4px rgba(251, 191, 36, 0.5))" 
+          : "drop-shadow(0px 0px 0px rgba(0,0,0,0))"
       }}
-      transition={{ duration: 0.8, ease: "easeInOut" }}
+      transition={{ duration: 0.5, ease: "easeInOut" }}
     >
-      {/* Círculo izquierdo */}
+      <defs>
+        <linearGradient id="luminaLogoGradientLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#10B981" />
+          <stop offset="100%" stopColor="#34D399" />
+        </linearGradient>
+
+        <linearGradient id="luminaLogoGradientRight" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#06B6D4" />
+          <stop offset="100%" stopColor="#FBBF24" />
+        </linearGradient>
+
+        <linearGradient id="luminaGlowHalo" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stopColor="#10B981" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#FBBF24" stopOpacity="0.2" />
+        </linearGradient>
+      </defs>
+
+      {/* Halo de fondo suave */}
+      <rect x="10" y="5" width="80" height="50" rx="25" fill="url(#luminaGlowHalo)" />
+
+      {/* Círculo izquierdo (Emerald) */}
       <motion.circle 
         cx="38" 
         cy="30" 
         r="20" 
-        stroke={strokeColor} 
-        strokeWidth="3.5"
-        animate={{ stroke: strokeColor }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
+        stroke="url(#luminaLogoGradientLeft)" 
+        strokeWidth="5"
+        strokeLinecap="round"
       />
 
-      {/* Círculo derecho */}
+      {/* Círculo derecho (Cyan / Amber) */}
       <motion.circle 
         cx="62" 
         cy="30" 
         r="20" 
-        stroke={strokeColor} 
-        strokeWidth="3.5"
-        animate={{ stroke: strokeColor }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
+        stroke="url(#luminaLogoGradientRight)" 
+        strokeWidth="5"
+        strokeLinecap="round"
       />
 
-      {/* Pequeño parche de entrelazado para que los anillos se crucen físicamente */}
+      {/* Intersección entrelazada */}
       <motion.path 
         d="M 46 11.7 A 20 20 0 0 1 54 18" 
-        stroke={strokeColor} 
-        strokeWidth="3.5" 
-        strokeLinecap="butt"
-        animate={{ stroke: strokeColor }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
+        stroke="url(#luminaLogoGradientLeft)" 
+        strokeWidth="5" 
+        strokeLinecap="round"
       />
     </motion.svg>
   );

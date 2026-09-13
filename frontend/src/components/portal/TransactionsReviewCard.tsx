@@ -58,27 +58,31 @@ const initialUnreviewed: UnreviewedTx[] = [
   }
 ];
 
+import { useFinance } from '../../context/FinanceContext';
+
 interface TransactionsReviewCardProps {
   onAllReviewed?: () => void;
 }
 
 export default function TransactionsReviewCard({ onAllReviewed }: TransactionsReviewCardProps) {
-  const [items, setItems] = useState<UnreviewedTx[]>(initialUnreviewed);
+  const { unreviewedItems, confirmUnreviewedSingle, confirmAllUnreviewed } = useFinance();
   const [confirmedCount, setConfirmedCount] = useState<number>(0);
+
+  const items = unreviewedItems;
 
   const formatMoney = (cents: number) => {
     return `$${(cents / 100).toFixed(2)}`;
   };
 
   const handleConfirmSingle = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+    confirmUnreviewedSingle(id);
     setConfirmedCount((c) => c + 1);
   };
 
   const handleConfirmAll = () => {
     const total = items.length;
+    confirmAllUnreviewed();
     setConfirmedCount((c) => c + total);
-    setItems([]);
     if (onAllReviewed) onAllReviewed();
   };
 

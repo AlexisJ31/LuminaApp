@@ -13,33 +13,37 @@ import {
 } from 'lucide-react';
 import LuminaLogo from '../LuminaLogo';
 
+import { useFinance } from '../../context/FinanceContext';
+
 interface SidebarProps {
   currentTab: string;
   onTabChange: (tab: string) => void;
   unreviewedCount?: number;
 }
 
-export default function Sidebar({ currentTab, onTabChange, unreviewedCount = 3 }: SidebarProps) {
+export default function Sidebar({ currentTab, onTabChange }: SidebarProps) {
+  const { accounts: liveAccounts, unreviewedCount: liveUnreviewedCount } = useFinance();
+
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'review', label: 'Por Revisar', icon: Receipt, badge: unreviewedCount },
+    { id: 'review', label: 'Por Revisar', icon: Receipt, badge: liveUnreviewedCount },
     { id: 'transactions', label: 'Transacciones', icon: Wallet },
     { id: 'recurrings', label: 'Recurrentes', icon: CalendarClock },
     { id: 'budgets', label: 'Presupuestos', icon: PieChart },
   ];
 
-  const accounts = [
-    { name: 'Banco General Débito', balance: '$1,420.50', icon: Building2, color: 'text-blue-400' },
-    { name: 'BAC Visa Crédito', balance: '$680.00', icon: CreditCard, color: 'text-amber-400' },
-    { name: 'Efectivo Panamá', balance: '$150.00', icon: Banknote, color: 'text-emerald-400' },
-  ];
+  const getAccountIcon = (type: string) => {
+    if (type === 'credit') return CreditCard;
+    if (type === 'cash') return Banknote;
+    return Building2;
+  };
 
   return (
     <aside className="hidden lg:flex flex-col w-64 h-full bg-[#080A0F] border-r border-white/5 text-white/80 p-4 select-none shrink-0 overflow-y-auto">
       
       {/* Brand Header */}
       <div className="flex items-center space-x-3 px-2 py-3 mb-4 cursor-pointer" onClick={() => onTabChange('dashboard')}>
-        <LuminaLogo isGlowing={true} className="w-8 h-8" />
+        <LuminaLogo isGlowing={true} className="w-9 h-6 shrink-0" />
         <span className="text-lg font-semibold tracking-tight text-white">LuminaApp</span>
         <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
           Personal
@@ -91,15 +95,17 @@ export default function Sidebar({ currentTab, onTabChange, unreviewedCount = 3 }
       {/* Accounts Breakdown */}
       <div className="mt-8 space-y-2">
         <p className="px-3 text-[10px] font-semibold text-white/30 uppercase tracking-wider">Mis Cuentas</p>
-        {accounts.map((acc, idx) => {
-          const AccIcon = acc.icon;
+        {liveAccounts.map((acc) => {
+          const AccIcon = getAccountIcon(acc.type);
           return (
-            <div key={idx} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 text-xs transition-colors cursor-pointer">
+            <div key={acc.id} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 text-xs transition-colors cursor-pointer">
               <div className="flex items-center space-x-2.5 truncate">
                 <AccIcon className={`w-3.5 h-3.5 ${acc.color}`} />
                 <span className="text-white/70 truncate text-[11px]">{acc.name}</span>
               </div>
-              <span className="text-white/90 font-mono text-[11px] font-medium">{acc.balance}</span>
+              <span className="text-white/90 font-mono text-[11px] font-medium">
+                ${acc.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </span>
             </div>
           );
         })}

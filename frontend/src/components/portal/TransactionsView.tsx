@@ -4,153 +4,54 @@ import {
   Search, Download, CheckCircle2, XCircle, Clock, 
   ArrowUpRight, ArrowDownRight, RefreshCw, FileText
 } from 'lucide-react';
-import { useTransactions, type Transaction } from '../../hooks/useTransactions';
-
-// Initial Mock Dataset for fallback when API has no records
-const FALLBACK_TRANSACTIONS: Transaction[] = [
-  {
-    id: 'tx-101',
-    userId: 'usr-1',
-    accountId: 'acc-credit-1',
-    categoryId: 'Alimentación / Supermercado',
-    amountInCents: 14580,
-    type: 'EXPENSE',
-    status: 'REVIEWED',
-    source: 'MANUAL',
-    description: 'Riba Smith Costa del Este',
-    notes: 'Compra de víveres semanales',
-    date: new Date(Date.now() - 3600000 * 4).toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: 'tx-102',
-    userId: 'usr-1',
-    accountId: 'acc-debit-1',
-    categoryId: 'Nómina / Salario',
-    amountInCents: 285000,
-    type: 'INCOME',
-    status: 'REVIEWED',
-    source: 'MANUAL',
-    description: 'Pago de Nómina Quincenal',
-    notes: 'Depósito directo Banco General',
-    date: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: 'tx-103',
-    userId: 'usr-1',
-    accountId: 'acc-credit-1',
-    categoryId: 'Restaurantes y Salidas',
-    amountInCents: 4500,
-    type: 'EXPENSE',
-    status: 'UNREVIEWED',
-    source: 'WEBHOOK_N8N',
-    description: 'Uber Eats - Sushi Market',
-    notes: 'Capta automatizada vía WhatsApp n8n',
-    date: new Date(Date.now() - 3600000 * 8).toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: 'tx-104',
-    userId: 'usr-1',
-    accountId: 'acc-debit-1',
-    categoryId: 'Servicios Básicos',
-    amountInCents: 6820,
-    type: 'EXPENSE',
-    status: 'REVIEWED',
-    source: 'MANUAL',
-    description: 'Naturgy Energía Eléctrica',
-    notes: 'Pago mensual de luz',
-    date: new Date(Date.now() - 3600000 * 24 * 5).toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: 'tx-105',
-    userId: 'usr-1',
-    accountId: 'acc-debit-1',
-    categoryId: 'Ventas / Freelance',
-    amountInCents: 35000,
-    type: 'INCOME',
-    status: 'REVIEWED',
-    source: 'MANUAL',
-    description: 'Proyecto Web Consulting',
-    notes: 'Honorarios cliente Panamá',
-    date: new Date(Date.now() - 3600000 * 24 * 7).toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: 'tx-106',
-    userId: 'usr-1',
-    accountId: 'acc-credit-1',
-    categoryId: 'Entretenimiento',
-    amountInCents: 1599,
-    type: 'EXPENSE',
-    status: 'REVIEWED',
-    source: 'IMPORT',
-    description: 'Netflix HD suscripción',
-    notes: 'Cobro recurrente de tarjeta',
-    date: new Date(Date.now() - 3600000 * 24 * 10).toISOString(),
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
+import { useFinance } from '../../context/FinanceContext';
 
 export default function TransactionsView() {
-  const { transactions: apiTransactions, reviewTransaction, isLoading } = useTransactions();
+  const { transactions: liveTransactions, confirmUnreviewedSingle } = useFinance();
 
   // State filters
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState<'ALL' | 'EXPENSE' | 'INCOME'>('ALL');
   const [statusFilter, setStatusFilter] = useState<'ALL' | 'UNREVIEWED' | 'REVIEWED' | 'REJECTED'>('ALL');
 
-  // Merged transactions (API data + fallback mock items if API empty)
-  const allTransactions = useMemo(() => {
-    if (apiTransactions && apiTransactions.length > 0) {
-      return apiTransactions;
-    }
-    return FALLBACK_TRANSACTIONS;
-  }, [apiTransactions]);
-
   // Filtered transactions computation
   const filteredTransactions = useMemo(() => {
-    return allTransactions.filter((tx) => {
+    return liveTransactions.filter((tx) => {
       // Type Filter
       if (typeFilter !== 'ALL' && tx.type !== typeFilter) return false;
       // Status Filter
-      if (statusFilter !== 'ALL' && tx.status !== statusFilter) return false;
+      if (statusFilter !== 'ALL') {
+        const txStatus = tx.status === 'confirmed' ? 'REVIEWED' : 'UNREVIEWED';
+        if (txStatus !== statusFilter) return false;
+      }
       // Search term
       if (searchTerm.trim() !== '') {
         const query = searchTerm.toLowerCase();
-        const matchDesc = tx.description.toLowerCase().includes(query);
-        const matchCat = (tx.categoryId || '').toLowerCase().includes(query);
-        const matchNotes = (tx.notes || '').toLowerCase().includes(query);
+        const matchDesc = tx.title.toLowerCase().includes(query);
+        const matchCat = (tx.category || '').toLowerCase().includes(query);
+        const matchNotes = (tx.sourceNotes || '').toLowerCase().includes(query);
         return matchDesc || matchCat || matchNotes;
       }
       return true;
     });
-  }, [allTransactions, typeFilter, statusFilter, searchTerm]);
+  }, [liveTransactions, typeFilter, statusFilter, searchTerm]);
 
   // Summary Metrics
   const stats = useMemo(() => {
-    let incomeCents = 0;
-    let expenseCents = 0;
+    let incomeDollars = 0;
+    let expenseDollars = 0;
 
     filteredTransactions.forEach((tx) => {
-      if (tx.type === 'INCOME') incomeCents += tx.amountInCents;
-      if (tx.type === 'EXPENSE') expenseCents += tx.amountInCents;
+      if (tx.type === 'INCOME') incomeDollars += tx.amount;
+      if (tx.type === 'EXPENSE') expenseDollars += tx.amount;
     });
 
     return {
       count: filteredTransactions.length,
-      income: (incomeCents / 100).toLocaleString('es-PA', { style: 'currency', currency: 'USD' }),
-      expense: (expenseCents / 100).toLocaleString('es-PA', { style: 'currency', currency: 'USD' }),
-      net: ((incomeCents - expenseCents) / 100).toLocaleString('es-PA', { style: 'currency', currency: 'USD' }),
-      netValue: incomeCents - expenseCents
+      income: incomeDollars.toLocaleString('es-PA', { style: 'currency', currency: 'USD' }),
+      expense: expenseDollars.toLocaleString('es-PA', { style: 'currency', currency: 'USD' }),
+      net: (incomeDollars - expenseDollars).toLocaleString('es-PA', { style: 'currency', currency: 'USD' }),
+      netValue: incomeDollars - expenseDollars
     };
   }, [filteredTransactions]);
 
@@ -334,44 +235,32 @@ export default function TransactionsView() {
 
                       {/* Description & Notes */}
                       <td className="py-3.5 px-4">
-                        <div className="font-semibold text-slate-900 dark:text-white">{tx.description}</div>
-                        {tx.notes && <div className="text-[10px] text-slate-400 dark:text-white/40 truncate max-w-xs">{tx.notes}</div>}
+                        <div className="font-semibold text-slate-900 dark:text-white">{tx.title}</div>
+                        {tx.sourceNotes && <div className="text-[10px] text-slate-400 dark:text-white/40 truncate max-w-xs">{tx.sourceNotes}</div>}
                       </td>
 
                       {/* Category */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white/80 font-medium text-[11px]">
-                          {tx.categoryId || 'General'}
+                        <span className={`px-2.5 py-1 rounded-lg font-medium text-[11px] ${tx.categoryBadgeColor || 'bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white/80'}`}>
+                          {tx.category || 'GENERAL'}
                         </span>
                       </td>
 
                       {/* Source */}
                       <td className="py-3.5 px-4 whitespace-nowrap text-[11px] text-slate-500 dark:text-white/40">
-                        {tx.source === 'WEBHOOK_N8N' && <span className="text-purple-400 font-semibold">⚡ n8n Webhook</span>}
-                        {tx.source === 'MANUAL' && <span>✍️ Manual</span>}
-                        {tx.source === 'IMPORT' && <span>📄 Importado</span>}
+                        {tx.id.includes('approved') ? (
+                          <span className="text-purple-400 font-semibold">⚡ n8n Webhook</span>
+                        ) : (
+                          <span>✍️ Manual</span>
+                        )}
                       </td>
 
                       {/* Status */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        {tx.status === 'REVIEWED' && (
-                          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold border border-emerald-500/20">
-                            <CheckCircle2 className="w-3 h-3" />
-                            <span>Revisado</span>
-                          </span>
-                        )}
-                        {tx.status === 'UNREVIEWED' && (
-                          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-semibold border border-amber-500/20 animate-pulse">
-                            <Clock className="w-3 h-3" />
-                            <span>Por Revisar</span>
-                          </span>
-                        )}
-                        {tx.status === 'REJECTED' && (
-                          <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-400 text-[10px] font-semibold border border-rose-500/20">
-                            <XCircle className="w-3 h-3" />
-                            <span>Rechazado</span>
-                          </span>
-                        )}
+                        <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold border border-emerald-500/20">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>Confirmado</span>
+                        </span>
                       </td>
 
                       {/* Amount */}
@@ -379,29 +268,12 @@ export default function TransactionsView() {
                         tx.type === 'INCOME' ? 'text-emerald-500 dark:text-emerald-400' : 'text-slate-900 dark:text-white'
                       }`}>
                         {tx.type === 'INCOME' ? '+' : '-'}
-                        {(tx.amountInCents / 100).toLocaleString('es-PA', { style: 'currency', currency: 'USD' })}
+                        {tx.amount.toLocaleString('es-PA', { style: 'currency', currency: 'USD' })}
                       </td>
 
                       {/* Quick Review Actions */}
                       <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                        {tx.status === 'UNREVIEWED' && (
-                          <div className="flex items-center justify-center space-x-1">
-                            <button
-                              onClick={() => reviewTransaction({ id: tx.id, status: 'REVIEWED' })}
-                              className="p-1 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/40 transition-colors"
-                              title="Aprobar Transacción"
-                            >
-                              <CheckCircle2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => reviewTransaction({ id: tx.id, status: 'REJECTED' })}
-                              className="p-1 rounded-lg bg-rose-500/20 text-rose-300 hover:bg-rose-500/40 transition-colors"
-                              title="Rechazar Transacción"
-                            >
-                              <XCircle className="w-4 h-4" />
-                            </button>
-                          </div>
-                        )}
+                        <span className="text-[10px] text-emerald-400 font-medium">Procesado</span>
                       </td>
                     </motion.tr>
                   ))}
