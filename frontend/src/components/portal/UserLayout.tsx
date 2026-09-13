@@ -25,7 +25,7 @@ export default function UserLayout({
   unreviewedCount = 3
 }: UserLayoutProps) {
   return (
-    <div className="flex min-h-screen w-full bg-[#080A0F] text-white selection:bg-white/20 font-sans antialiased overflow-x-hidden">
+    <div className="flex min-h-screen w-full bg-slate-50 dark:bg-[#080A0F] text-slate-900 dark:text-white selection:bg-emerald-500/20 font-sans antialiased overflow-x-hidden transition-colors duration-300">
       
       {/* Sidebar para Pantallas Grandes (Desktop lg) */}
       <Sidebar 
