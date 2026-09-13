@@ -42,6 +42,7 @@ export default function UserLayout({
           currentTab={currentTab}
           onOpenNewTransaction={onOpenNewTransaction}
           onNavigateHome={onNavigateHome}
+          onTabChange={onTabChange}
           isDarkMode={isDarkMode}
           toggleTheme={toggleTheme}
         />
