@@ -25,7 +25,7 @@ export default function UserLayout({
   unreviewedCount = 3
 }: UserLayoutProps) {
   return (
-    <div className="flex min-h-screen w-full bg-slate-50 dark:bg-[#080A0F] text-slate-900 dark:text-white selection:bg-emerald-500/20 font-sans antialiased overflow-x-hidden transition-colors duration-300">
+    <div className="flex h-screen w-full bg-slate-50 dark:bg-[#080A0F] text-slate-900 dark:text-white selection:bg-emerald-500/20 font-sans antialiased overflow-hidden transition-colors duration-300">
       
       {/* Sidebar para Pantallas Grandes (Desktop lg) */}
       <Sidebar 
@@ -35,7 +35,7 @@ export default function UserLayout({
       />
 
       {/* Contenedor Principal (Header + Área de Trabajo + Mobile Navigation) */}
-      <div className="flex-1 flex flex-col min-w-0 pb-20 lg:pb-0 min-h-screen">
+      <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
         
         {/* Header Superior Adaptativo */}
         <Topbar 
@@ -47,8 +47,8 @@ export default function UserLayout({
           toggleTheme={toggleTheme}
         />
 
-        {/* Área Principal de Contenido Dinámico */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl w-full mx-auto space-y-6">
+        {/* Área Principal de Contenido Dinámico (Scrollable Dashboard) */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl w-full mx-auto space-y-6 pb-24 lg:pb-8">
           {children}
         </main>
 
