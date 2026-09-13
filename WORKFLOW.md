@@ -22,7 +22,9 @@ El asistente de IA (Antigravity) será el responsable de:
 ## 4. Revisión y Merge
 El **Usuario (Líder del Proyecto)** es el único responsable de revisar el Pull Request y realizar el **Merge** oficial hacia `main`. 
 
-## 5. Entorno de Staging y Live Confirm
-- Existirá un entorno de **Staging** (pre-producción) donde se desplegará la aplicación de forma automática o manual tras un merge.
-- Después de cada merge, el equipo esperará a que el despliegue finalice exitosamente.
-- Se realizará un **"Live Confirm"** (confirmación en vivo) comprobando visual y funcionalmente los cambios en el entorno de Staging antes de dar por cerrada la tarea y pasar al siguiente ticket.
+## 5. Entorno de Staging y Live Confirm Obligatorio
+- Existirá un entorno de **Staging** (pre-producción) donde se desplegará la aplicación de forma automática tras un merge en `main`.
+- **REGLA ESTRUCTURAL DE ORO:** **NUNCA** se cambiará el estado de un ticket a **"Done"** en Linear inmediatamente al escribir el código.
+- Cada ticket debe atravesar obligatoriamente la fase de **"Live Confirm"** (comprobación visual y funcional en vivo sobre la URL de Staging desplegada).
+- Solo tras confirmar empíricamente que la funcionalidad responde al 100% de lo solicitado, se marcará el ticket como **"Done"** en Linear y se procederá secuencialmente con el siguiente ticket.
+
