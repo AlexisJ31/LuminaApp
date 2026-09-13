@@ -42,12 +42,17 @@ export default function Sidebar({ currentTab, onTabChange }: SidebarProps) {
     <aside className="hidden lg:flex flex-col w-64 h-full bg-[#080A0F] border-r border-white/5 text-white/80 p-4 select-none shrink-0 overflow-y-auto">
       
       {/* Brand Header */}
-      <div className="flex items-center space-x-3 px-2 py-3 mb-4 cursor-pointer" onClick={() => onTabChange('dashboard')}>
-        <LuminaLogo isGlowing={true} className="w-9 h-6 shrink-0" />
-        <span className="text-lg font-semibold tracking-tight text-white">LuminaApp</span>
-        <span className="text-[10px] uppercase font-bold tracking-widest px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-          Personal
-        </span>
+      <div className="flex items-center space-x-3 px-2 py-3 mb-4 cursor-pointer group" onClick={() => onTabChange('dashboard')}>
+        <LuminaLogo isGlowing={true} className="w-8 h-8 shrink-0" />
+        <div className="flex flex-col">
+          <div className="flex items-center space-x-2">
+            <span className="text-lg font-bold tracking-tight text-white group-hover:text-emerald-400 transition-colors">LuminaApp</span>
+            <span className="text-[9px] uppercase font-bold tracking-widest px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              Personal
+            </span>
+          </div>
+          <span className="text-[10px] text-white/40 font-mono">v2.4 Live Connected</span>
+        </div>
       </div>
 
       {/* Search Input */}
@@ -56,7 +61,12 @@ export default function Sidebar({ currentTab, onTabChange }: SidebarProps) {
         <input 
           type="text" 
           placeholder="Buscar gastos, categorías..." 
-          className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-white/20 transition-all"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onTabChange('transactions');
+            }
+          }}
+          className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-9 pr-3 text-xs text-white placeholder:text-white/30 focus:outline-none focus:border-emerald-500/50 transition-all"
         />
       </div>
 
@@ -94,14 +104,26 @@ export default function Sidebar({ currentTab, onTabChange }: SidebarProps) {
 
       {/* Accounts Breakdown */}
       <div className="mt-8 space-y-2">
-        <p className="px-3 text-[10px] font-semibold text-white/30 uppercase tracking-wider">Mis Cuentas</p>
+        <div className="flex items-center justify-between px-3">
+          <p className="text-[10px] font-semibold text-white/30 uppercase tracking-wider">Mis Cuentas</p>
+          <button 
+            onClick={() => onTabChange('transactions')} 
+            className="text-[10px] font-semibold text-emerald-400 hover:underline"
+          >
+            Ver Todas
+          </button>
+        </div>
         {liveAccounts.map((acc) => {
           const AccIcon = getAccountIcon(acc.type);
           return (
-            <div key={acc.id} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-white/5 text-xs transition-colors cursor-pointer">
+            <div 
+              key={acc.id} 
+              onClick={() => onTabChange('transactions')}
+              className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-white/5 text-xs transition-colors cursor-pointer group"
+            >
               <div className="flex items-center space-x-2.5 truncate">
-                <AccIcon className={`w-3.5 h-3.5 ${acc.color}`} />
-                <span className="text-white/70 truncate text-[11px]">{acc.name}</span>
+                <AccIcon className={`w-3.5 h-3.5 ${acc.color} group-hover:scale-110 transition-transform`} />
+                <span className="text-white/70 group-hover:text-white truncate text-[11px] transition-colors">{acc.name}</span>
               </div>
               <span className="text-white/90 font-mono text-[11px] font-medium">
                 ${acc.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

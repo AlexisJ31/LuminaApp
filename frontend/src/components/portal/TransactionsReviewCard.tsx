@@ -12,52 +12,6 @@ export interface UnreviewedTx {
   sourceNotes?: string;
 }
 
-const initialUnreviewed: UnreviewedTx[] = [
-  {
-    id: 'tx-101',
-    description: 'Apple Music',
-    amountInCents: 1099, // $10.99
-    category: 'SUBSCRIPTIONS',
-    categoryBadgeColor: 'bg-cyan-500/10 text-cyan-300 border-cyan-500/20',
-    dateLabel: 'HOY',
-    sourceNotes: 'Inyectado por n8n desde correo bancario'
-  },
-  {
-    id: 'tx-102',
-    description: 'Supermercado Riba Smith',
-    amountInCents: 3286, // $32.86
-    category: 'GROCERIES',
-    categoryBadgeColor: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
-    dateLabel: 'HOY',
-    sourceNotes: 'Notificación de compra con tarjeta débito'
-  },
-  {
-    id: 'tx-103',
-    description: 'Uber Panamá',
-    amountInCents: 2135, // $21.35
-    category: 'TRANSPORTATION',
-    categoryBadgeColor: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
-    dateLabel: 'HOY',
-    sourceNotes: 'Ingresado pasivamente por webhook'
-  },
-  {
-    id: 'tx-104',
-    description: 'Film Noir Cinemas',
-    amountInCents: 1799, // $17.99
-    category: 'ENTERTAINMENT',
-    categoryBadgeColor: 'bg-purple-500/10 text-purple-300 border-purple-500/20',
-    dateLabel: 'AYER'
-  },
-  {
-    id: 'tx-105',
-    description: "Eden's Salads",
-    amountInCents: 1512, // $15.12
-    category: 'RESTAURANTS',
-    categoryBadgeColor: 'bg-orange-500/10 text-orange-300 border-orange-500/20',
-    dateLabel: 'AYER'
-  }
-];
-
 import { useFinance } from '../../context/FinanceContext';
 
 interface TransactionsReviewCardProps {
@@ -65,7 +19,7 @@ interface TransactionsReviewCardProps {
 }
 
 export default function TransactionsReviewCard({ onAllReviewed }: TransactionsReviewCardProps) {
-  const { unreviewedItems, confirmUnreviewedSingle, confirmAllUnreviewed } = useFinance();
+  const { unreviewedItems, confirmUnreviewedSingle, confirmAllUnreviewed, rejectUnreviewedSingle } = useFinance();
   const [confirmedCount, setConfirmedCount] = useState<number>(0);
 
   const items = unreviewedItems;
@@ -164,15 +118,23 @@ export default function TransactionsReviewCard({ onAllReviewed }: TransactionsRe
                   </div>
                 </div>
 
-                {/* Amount & Quick Confirm */}
-                <div className="flex items-center space-x-3 shrink-0">
-                  <span className="font-mono text-xs font-bold text-white">
+                {/* Amount & Quick Confirm/Reject */}
+                <div className="flex items-center space-x-2 shrink-0">
+                  <span className="font-mono text-xs font-bold text-white mr-1">
                     {formatMoney(item.amountInCents)}
                   </span>
                   
                   <button
+                    onClick={() => rejectUnreviewedSingle(item.id)}
+                    className="flex items-center space-x-1 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all active:scale-95"
+                    title="Descartar gasto"
+                  >
+                    <span>Descartar</span>
+                  </button>
+
+                  <button
                     onClick={() => handleConfirmSingle(item.id)}
-                    className="hidden sm:flex items-center space-x-1 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all active:scale-95"
+                    className="flex items-center space-x-1 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all active:scale-95"
                   >
                     <span>Confirmar</span>
                   </button>
