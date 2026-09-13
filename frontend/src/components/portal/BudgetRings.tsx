@@ -1,4 +1,5 @@
 import { motion } from 'motion/react';
+import { useFinance } from '../../context/FinanceContext';
 
 export interface BudgetRingItem {
   id: string;
@@ -48,7 +49,9 @@ interface BudgetRingsProps {
   items?: BudgetRingItem[];
 }
 
-export default function BudgetRings({ items = defaultRings }: BudgetRingsProps) {
+export default function BudgetRings({ items }: BudgetRingsProps) {
+  const { budgets } = useFinance();
+  const ringItems = items || (budgets.length > 0 ? budgets : defaultRings);
   const formatMoney = (cents: number) => {
     return `$${(cents / 100).toFixed(2)}`;
   };
@@ -62,12 +65,12 @@ export default function BudgetRings({ items = defaultRings }: BudgetRingsProps) 
           <h3 className="text-base font-semibold text-white tracking-tight">Presupuestos por Categoría</h3>
           <p className="text-xs text-white/40">Anillos de progreso y límites mensuales</p>
         </div>
-        <span className="text-xs font-mono font-bold text-white/60">{items.length} Categorías Activas</span>
+        <span className="text-xs font-mono font-bold text-white/60">{ringItems.length} Categorías Activas</span>
       </div>
 
       {/* Grid of Category Rings */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
-        {items.map((item) => {
+        {ringItems.map((item) => {
           const pct = Math.min(100, Math.round((item.spentInCents / item.limitInCents) * 100));
           const isOver = item.spentInCents > item.limitInCents;
           const diffCents = Math.abs(item.limitInCents - item.spentInCents);

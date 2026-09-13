@@ -1,27 +1,27 @@
 import { TrendingDown, TrendingUp } from 'lucide-react';
+import { useFinance } from '../../context/FinanceContext';
 
 interface MonthlySpendingCardProps {
-  spentInCents?: number;
-  budgetedInCents?: number;
-  pacingStatus?: 'UNDER' | 'OVER';
-  pacingDiffInCents?: number;
   monthLabel?: string;
   children?: React.ReactNode;
 }
 
 export default function MonthlySpendingCard({
-  spentInCents = 65000, // $650.00
-  budgetedInCents = 200000, // $2,000.00
-  pacingStatus = 'UNDER',
-  pacingDiffInCents = 10000, // $100.00
   monthLabel = 'Septiembre 2026',
   children
 }: MonthlySpendingCardProps) {
+  const { totalSpent, budgetLimit } = useFinance();
+
+  const spentInCents = Math.round(totalSpent * 100);
+  const budgetedInCents = Math.round(budgetLimit * 100);
+
+  const diffInCents = Math.abs(budgetedInCents - spentInCents);
+  const isUnder = spentInCents <= budgetedInCents;
+  const pacingStatus = isUnder ? 'UNDER' : 'OVER';
+
   const formatMoney = (cents: number) => {
     return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
-
-  const isUnder = pacingStatus === 'UNDER';
 
   return (
     <div className="w-full bg-[#121824] border border-white/5 rounded-3xl p-5 sm:p-6 backdrop-blur-xl space-y-4 shadow-2xl relative overflow-hidden select-none">
@@ -45,7 +45,7 @@ export default function MonthlySpendingCard({
             : 'bg-rose-500/10 text-rose-400 border-rose-500/30 shadow-rose-500/10'
         }`}>
           {isUnder ? <TrendingDown className="w-3.5 h-3.5" /> : <TrendingUp className="w-3.5 h-3.5" />}
-          <span>{formatMoney(pacingDiffInCents)} {isUnder ? 'bajo presupuesto' : 'sobre límite'}</span>
+          <span>{formatMoney(diffInCents)} {isUnder ? 'bajo presupuesto' : 'sobre límite'}</span>
         </div>
       </div>
 
@@ -60,7 +60,7 @@ export default function MonthlySpendingCard({
           </span>
         </div>
         <p className="text-xs text-white/50">
-          Cálculo del ritmo de gasto procesado en servidor (UTC-5 Panamá)
+          Cálculo del ritmo de gasto procesado en tiempo real (UTC-5 Panamá)
         </p>
       </div>
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { TrendingUp, Wallet } from 'lucide-react';
+import { useFinance } from '../../context/FinanceContext';
 
 interface NetWorthCardProps {
   netWorthInCents?: number;
@@ -7,9 +8,11 @@ interface NetWorthCardProps {
 }
 
 export default function NetWorthCard({
-  netWorthInCents = 10000000, // $100,000.00
+  netWorthInCents,
   growthPct = 32.5
 }: NetWorthCardProps) {
+  const { netWorth } = useFinance();
+  const displayCents = netWorthInCents ?? Math.round(netWorth * 100);
   const [selectedPeriod, setSelectedPeriod] = useState<string>('1M');
 
   const formatMoney = (cents: number) => {
@@ -50,7 +53,7 @@ export default function NetWorthCard({
       <div className="space-y-1">
         <div className="flex items-baseline space-x-3">
           <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white font-mono">
-            {formatMoney(netWorthInCents)}
+            {formatMoney(displayCents)}
           </span>
           <div className="flex items-center space-x-1 text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
             <TrendingUp className="w-3 h-3" />

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Calendar, CreditCard, Plus, CheckCircle, Zap, Trash2 } from 'lucide-react';
+import { useFinance } from '../../context/FinanceContext';
 
 export interface RecurringBill {
   id: string;
@@ -67,7 +68,7 @@ const INITIAL_RECURRINGS: RecurringBill[] = [
 ];
 
 export default function RecurringsView() {
-  const [recurrings, setRecurrings] = useState<RecurringBill[]>(INITIAL_RECURRINGS);
+  const { recurrings, addRecurring, removeRecurring } = useFinance();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newName, setNewName] = useState('');
   const [newAmount, setNewAmount] = useState('');
@@ -83,8 +84,7 @@ export default function RecurringsView() {
     e.preventDefault();
     if (!newName || !newAmount) return;
 
-    const newBill: RecurringBill = {
-      id: `rec-${Date.now()}`,
+    addRecurring({
       name: newName,
       category: newCategory,
       amount: parseFloat(newAmount),
@@ -92,16 +92,15 @@ export default function RecurringsView() {
       nextBillingDate: new Date(Date.now() + 86400000 * 15).toISOString().slice(0, 10),
       paymentMethod: 'Tarjeta Débito Principal',
       status: 'ACTIVE'
-    };
+    });
 
-    setRecurrings([newBill, ...recurrings]);
     setNewName('');
     setNewAmount('');
     setIsAddModalOpen(false);
   };
 
   const handleRemove = (id: string) => {
-    setRecurrings(recurrings.filter(r => r.id !== id));
+    removeRecurring(id);
   };
 
   return (
