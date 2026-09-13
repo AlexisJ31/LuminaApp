@@ -4,7 +4,7 @@ import { ArrowRight, Wallet, BarChart3, Users, Zap, Check } from 'lucide-react';
 import LuminaLogo from './LuminaLogo';
 
 interface LandingPageProps {
-  onNavigate: (view: 'landing' | 'register' | 'login') => void;
+  onNavigate: (view: 'landing' | 'register' | 'login' | 'portal') => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
 }
@@ -79,10 +79,10 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
           </button>
           
           <button 
-            onClick={() => onNavigate('register')}
-            className="hidden sm:inline-flex px-4 py-2 bg-black text-white dark:bg-white dark:text-black text-xs font-semibold rounded-xl hover:bg-black/90 dark:hover:bg-white/90 active:scale-[0.98] transition-all duration-200"
+            onClick={() => onNavigate('portal')}
+            className="inline-flex px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold rounded-xl active:scale-[0.98] transition-all duration-200 shadow-lg shadow-emerald-500/20"
           >
-            Empezar Gratis
+            🚀 Ver Demo Portal
           </button>
         </div>
       </motion.nav>
