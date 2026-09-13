@@ -7,6 +7,7 @@ import UserLayout from './components/portal/UserLayout';
 import DashboardView from './components/portal/DashboardView';
 import TransactionsReviewCard from './components/portal/TransactionsReviewCard';
 import BudgetRings from './components/portal/BudgetRings';
+import TransactionModal from './components/portal/TransactionModal';
 
 export default function App() {
   const [view, setView] = useState<'landing' | 'register' | 'login' | 'portal'>('landing');
@@ -53,12 +54,10 @@ export default function App() {
         isDarkMode={isDarkMode}
         toggleTheme={toggleTheme}
       >
-        {isNewTxModalOpen && (
-          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center justify-between animate-fade-in mb-4">
-            <span>Formulario para Registrar Gasto Rápido (1-Click FAB)</span>
-            <button onClick={() => setIsNewTxModalOpen(false)} className="px-3 py-1 bg-emerald-500/20 rounded-lg font-bold">Cerrar</button>
-          </div>
-        )}
+        <TransactionModal 
+          isOpen={isNewTxModalOpen} 
+          onClose={() => setIsNewTxModalOpen(false)} 
+        />
 
         {portalTab === 'dashboard' && <DashboardView />}
         {portalTab === 'review' && <TransactionsReviewCard />}
