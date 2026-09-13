@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { User, Key, CreditCard, Globe, Check, Copy, Shield, Save } from 'lucide-react';
+import { User, Key, CreditCard, Globe, Check, Copy, Shield, Save, RotateCcw, Building2, Banknote } from 'lucide-react';
+import { useFinance } from '../../context/FinanceContext';
 
 export default function SettingsView() {
+  const { accounts, budgetLimit, updateGlobalBudgetLimit, resetToDefaults } = useFinance();
   const [activeTab, setActiveTab] = useState<'profile' | 'webhook' | 'accounts' | 'preferences'>('profile');
   
   // Form State
@@ -10,9 +12,11 @@ export default function SettingsView() {
   const [userEmail, setUserEmail] = useState('alexis@luminaapp.io');
   const [currency, setCurrency] = useState('USD');
   const [timezone, setTimezone] = useState('America/Panama');
+  const [customBudgetLimit, setCustomBudgetLimit] = useState(budgetLimit.toString());
   const [webhookKey] = useState('lum_live_sk_99a8b7c6d5e4f3a2b1_n8n');
   const [isCopied, setIsCopied] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isResetDone, setIsResetDone] = useState(false);
 
   const handleCopyKey = () => {
     navigator.clipboard.writeText(webhookKey);
@@ -22,8 +26,19 @@ export default function SettingsView() {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    const parsedLimit = parseFloat(customBudgetLimit);
+    if (!isNaN(parsedLimit) && parsedLimit > 0) {
+      updateGlobalBudgetLimit(parsedLimit);
+    }
     setIsSaved(true);
     setTimeout(() => setIsSaved(false), 3000);
+  };
+
+  const handleResetData = () => {
+    resetToDefaults();
+    setCustomBudgetLimit('2000');
+    setIsResetDone(true);
+    setTimeout(() => setIsResetDone(false), 3000);
   };
 
   return (
@@ -75,7 +90,7 @@ export default function SettingsView() {
           }`}
         >
           <CreditCard className="w-4 h-4" />
-          <span>Cuentas Bancarias</span>
+          <span>Cuentas Bancarias ({accounts.length})</span>
         </button>
 
         <button
@@ -187,31 +202,22 @@ export default function SettingsView() {
             <h3 className="font-semibold text-slate-900 dark:text-white text-base">Cuentas y Tarjetas Vinculadas</h3>
             
             <div className="space-y-3">
-              <div className="p-4 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold text-xs">
-                    BG
+              {accounts.map((acc) => (
+                <div key={acc.id} className="p-4 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-xs border border-emerald-500/20">
+                      {acc.type === 'credit' ? <CreditCard className="w-5 h-5" /> : acc.type === 'cash' ? <Banknote className="w-5 h-5" /> : <Building2 className="w-5 h-5" />}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-slate-900 dark:text-white text-xs">{acc.name}</div>
+                      <div className="text-[10px] text-slate-400 dark:text-white/40 capitalize">{acc.type} • ID: {acc.id}</div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="font-semibold text-slate-900 dark:text-white text-xs">Banco General - Cuenta de Débito</div>
-                    <div className="text-[10px] text-slate-400 dark:text-white/40">Principal • Cta: ••• 1092</div>
-                  </div>
+                  <span className="text-xs font-mono font-extrabold text-slate-900 dark:text-white">
+                    ${acc.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
                 </div>
-                <span className="text-xs font-extrabold text-slate-900 dark:text-white">$1,450.00</span>
-              </div>
-
-              <div className="p-4 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs">
-                    BAC
-                  </div>
-                  <div>
-                    <div className="font-semibold text-slate-900 dark:text-white text-xs">BAC Credomatic - Visa CashBack</div>
-                    <div className="text-[10px] text-slate-400 dark:text-white/40">Crédito • Tarjeta: ••• 4821</div>
-                  </div>
-                </div>
-                <span className="text-xs font-extrabold text-amber-400">-$340.50</span>
-              </div>
+              ))}
             </div>
           </div>
         )}
@@ -222,6 +228,17 @@ export default function SettingsView() {
             <h3 className="font-semibold text-slate-900 dark:text-white text-base">Preferencias Financieras</h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs text-slate-500 dark:text-white/60">Límite de Presupuesto Mensual ($)</label>
+                <input
+                  type="number"
+                  step="50"
+                  value={customBudgetLimit}
+                  onChange={(e) => setCustomBudgetLimit(e.target.value)}
+                  className="w-full mt-1 px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#121824] border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-mono font-bold text-xs focus:outline-none focus:border-emerald-500/50"
+                />
+              </div>
+
               <div>
                 <label className="text-xs text-slate-500 dark:text-white/60">Moneda Base</label>
                 <select
@@ -243,25 +260,36 @@ export default function SettingsView() {
                 >
                   <option value="America/Panama">America/Panama (UTC-5)</option>
                   <option value="America/Bogota">America/Bogota (UTC-5)</option>
-                  <option value="UTC">UTC Universal</option>
+                  <option value="America/New_York">America/New_York (UTC-4)</option>
                 </select>
               </div>
             </div>
 
             <div className="pt-4 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
-              {isSaved && (
-                <span className="text-xs text-emerald-400 font-medium flex items-center space-x-1">
-                  <Check className="w-4 h-4" />
-                  <span>¡Preferencias guardadas!</span>
-                </span>
-              )}
               <button
-                type="submit"
-                className="ml-auto flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-black font-semibold text-xs shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
+                type="button"
+                onClick={handleResetData}
+                className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-semibold transition-all active:scale-95"
               >
-                <Save className="w-4 h-4" />
-                <span>Guardar Preferencias</span>
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>{isResetDone ? '¡Datos Restablecidos!' : 'Restablecer Datos Demo'}</span>
               </button>
+
+              <div className="flex items-center space-x-3">
+                {isSaved && (
+                  <span className="text-xs text-emerald-400 font-medium flex items-center space-x-1">
+                    <Check className="w-4 h-4" />
+                    <span>¡Guardado!</span>
+                  </span>
+                )}
+                <button
+                  type="submit"
+                  className="flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-black font-semibold text-xs shadow-lg shadow-emerald-500/20 active:scale-95 transition-all"
+                >
+                  <Save className="w-4 h-4" />
+                  <span>Guardar Preferencias</span>
+                </button>
+              </div>
             </div>
           </form>
         )}

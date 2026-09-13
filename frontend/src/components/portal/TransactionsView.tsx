@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Search, Download, CheckCircle2, XCircle, Clock, 
-  ArrowUpRight, ArrowDownRight, RefreshCw, FileText
+  Search, Download, CheckCircle2, 
+  ArrowUpRight, ArrowDownRight, RefreshCw, FileText, Trash2
 } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 
 export default function TransactionsView() {
-  const { transactions: liveTransactions, confirmUnreviewedSingle } = useFinance();
+  const { transactions: liveTransactions, deleteTransaction } = useFinance();
 
   // State filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,11 +61,11 @@ export default function TransactionsView() {
     const rows = filteredTransactions.map((tx) => [
       tx.id,
       new Date(tx.date).toLocaleDateString('es-PA'),
-      `"${tx.description.replace(/"/g, '""')}"`,
-      `"${(tx.categoryId || 'General').replace(/"/g, '""')}"`,
+      `"${(tx.title || tx.description || 'Gasto').replace(/"/g, '""')}"`,
+      `"${(tx.category || tx.categoryId || 'General').replace(/"/g, '""')}"`,
       tx.type,
       tx.status,
-      (tx.amountInCents / 100).toFixed(2)
+      (tx.amountInCents ? tx.amountInCents / 100 : tx.amount).toFixed(2)
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
@@ -205,14 +205,7 @@ export default function TransactionsView() {
             </thead>
 
             <tbody className="divide-y divide-slate-100 dark:divide-white/5 text-xs text-slate-700 dark:text-white/80">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-slate-400 dark:text-white/40">
-                    <RefreshCw className="w-6 h-6 mx-auto animate-spin mb-2 text-emerald-400" />
-                    Cargando transacciones...
-                  </td>
-                </tr>
-              ) : filteredTransactions.length === 0 ? (
+              {filteredTransactions.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-slate-400 dark:text-white/40">
                     No se encontraron transacciones con los filtros seleccionados.
@@ -273,7 +266,13 @@ export default function TransactionsView() {
 
                       {/* Quick Review Actions */}
                       <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                        <span className="text-[10px] text-emerald-400 font-medium">Procesado</span>
+                        <button
+                          onClick={() => deleteTransaction(tx.id)}
+                          className="p-1.5 text-slate-400 hover:text-rose-400 dark:text-white/30 dark:hover:text-rose-400 transition-colors rounded-lg hover:bg-rose-500/10"
+                          title="Eliminar Transacción"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </td>
                     </motion.tr>
                   ))}

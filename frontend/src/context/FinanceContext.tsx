@@ -3,12 +3,16 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 export interface TransactionItem {
   id: string;
   title: string;
+  description?: string;
   category: string;
+  categoryId?: string;
   type: 'EXPENSE' | 'INCOME';
   amount: number; // in dollars (e.g. 10.99)
+  amountInCents?: number;
   date: string; // e.g. '2026-09-13'
   account: string;
-  status: 'confirmed' | 'pending';
+  accountId?: string;
+  status: 'confirmed' | 'pending' | 'CONFIRMED' | 'PENDING';
   sourceNotes?: string;
   categoryBadgeColor?: string;
 }
@@ -36,7 +40,10 @@ export interface CategoryBudget {
   category: string;
   spent: number;
   limit: number;
+  spentInCents?: number;
+  limitInCents?: number;
   color: string;
+  emoji?: string;
 }
 
 export interface RecurringBill {
@@ -47,7 +54,10 @@ export interface RecurringBill {
   dueDate: string;
   frequency: string;
   autoPay: boolean;
-  status: 'PAID' | 'UPCOMING';
+  status: 'PAID' | 'UPCOMING' | 'ACTIVE' | 'PAUSED';
+  billingCycle?: string;
+  nextBillingDate?: string;
+  paymentMethod?: string;
 }
 
 interface FinanceContextType {
@@ -61,18 +71,32 @@ interface FinanceContextType {
   netWorth: number;
   unreviewedCount: number;
   addTransaction: (tx: {
-    description: string;
+    description?: string;
+    title?: string;
     amount: number;
     type: 'EXPENSE' | 'INCOME';
-    categoryId: string;
-    accountId: string;
+    categoryId?: string;
+    accountId?: string;
+    account?: string;
+    category?: string;
+    merchant?: string;
+    amountInCents?: number;
+    status?: 'CONFIRMED' | 'PENDING' | 'confirmed' | 'pending';
     notes?: string;
     date?: string;
+    source?: string;
+    isRecurring?: boolean;
   }) => void;
+  deleteTransaction: (id: string) => void;
   confirmUnreviewedSingle: (id: string) => void;
   confirmAllUnreviewed: () => void;
+  rejectUnreviewedSingle: (id: string) => void;
+  updateBudgetLimit: (id: string, newLimitInCents: number) => void;
+  updateGlobalBudgetLimit: (limitInDollars: number) => void;
   addAccount: (acc: { name: string; balance: number; type: 'checking' | 'credit' | 'cash' }) => void;
   addRecurring: (rec: Omit<RecurringBill, 'id'>) => void;
+  removeRecurring: (id: string) => void;
+  toggleRecurringStatus: (id: string) => void;
   resetToDefaults: () => void;
 }
 
@@ -266,7 +290,18 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     .filter((t) => t.type === 'EXPENSE' && t.status === 'confirmed')
     .reduce((sum, t) => sum + t.amount, 0);
 
-  const budgetLimit = 2000.00;
+  const [budgetLimit, setBudgetLimit] = useState<number>(() => {
+    const saved = localStorage.getItem('lumina_budget_limit');
+    return saved ? parseFloat(saved) : 2000.00;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('lumina_budget_limit', budgetLimit.toString());
+  }, [budgetLimit]);
+
+  const updateGlobalBudgetLimit = (limitInDollars: number) => {
+    setBudgetLimit(limitInDollars);
+  };
 
   const totalLiquid = accounts
     .filter((a) => a.type !== 'credit')
@@ -280,21 +315,36 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const addTransaction = ({
     description,
+    title,
     amount,
     type,
-    categoryId,
-    accountId,
+    categoryId = 'cat-groc',
+    accountId = 'acc-debito',
+    account,
+    category,
+    merchant,
     notes,
     date
   }: {
-    description: string;
+    description?: string;
+    title?: string;
     amount: number;
     type: 'EXPENSE' | 'INCOME';
-    categoryId: string;
-    accountId: string;
+    categoryId?: string;
+    accountId?: string;
+    account?: string;
+    category?: string;
+    merchant?: string;
+    amountInCents?: number;
+    status?: 'CONFIRMED' | 'PENDING' | 'confirmed' | 'pending';
     notes?: string;
     date?: string;
+    source?: string;
+    isRecurring?: boolean;
   }) => {
+    const finalDesc = description || title || merchant || 'Gasto registrado';
+    const finalAccount = account || accountId || 'acc-debito';
+    const finalCat = category || categoryId || 'cat-groc';
     const newId = `tx-user-${Date.now()}`;
     const txDate = date || new Date().toISOString().split('T')[0];
 
@@ -309,15 +359,18 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const newTx: TransactionItem = {
       id: newId,
-      title: description,
-      category: categoryId.replace('cat-', '').toUpperCase(),
+      title: finalDesc,
+      description: finalDesc,
+      category: finalCat.replace('cat-', '').toUpperCase(),
+      categoryId: finalCat,
       type,
       amount,
       date: txDate,
-      account: accountId,
+      account: finalAccount,
+      accountId: finalAccount,
       status: 'confirmed',
       sourceNotes: notes || 'Transacción ingresada manualmente',
-      categoryBadgeColor: categoryColorMap[categoryId] || 'bg-purple-500/10 text-purple-300 border-purple-500/20'
+      categoryBadgeColor: categoryColorMap[finalCat] || 'bg-purple-500/10 text-purple-300 border-purple-500/20'
     };
 
     // Update transactions list
@@ -326,7 +379,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     // Update corresponding account balance
     setAccounts((prev) =>
       prev.map((acc) => {
-        if (acc.id === accountId) {
+        if (acc.id === finalAccount || acc.name === finalAccount) {
           const delta = type === 'INCOME' ? amount : -amount;
           return { ...acc, balance: Math.max(0, acc.balance + delta) };
         }
@@ -338,7 +391,7 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (type === 'EXPENSE') {
       setBudgets((prev) =>
         prev.map((b) => {
-          const catName = categoryId.toLowerCase();
+          const catName = finalCat.toLowerCase();
           if (
             (catName.includes('groc') || catName.includes('super')) && b.category.includes('Alimentación') ||
             (catName.includes('rest')) && b.category.includes('Restaurantes') ||
@@ -353,51 +406,66 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
-  const confirmUnreviewedSingle = (id: string) => {
-    const target = unreviewedItems.find((item) => item.id === id);
+  const deleteTransaction = (id: string) => {
+    const target = transactions.find(t => t.id === id);
     if (!target) return;
+    setTransactions(prev => prev.filter(t => t.id !== id));
 
-    const amountInDollars = target.amountInCents / 100;
-    const newTx: TransactionItem = {
-      id: `tx-approved-${Date.now()}-${id}`,
-      title: target.description,
-      category: target.category,
-      type: 'EXPENSE',
+    // Revert account balance adjustment if confirmed
+    if (target.status === 'confirmed' || target.status === 'CONFIRMED') {
+      setAccounts(prev =>
+        prev.map(acc => {
+          if (acc.id === target.account || acc.name === target.account) {
+            const delta = target.type === 'INCOME' ? -target.amount : target.amount;
+            return { ...acc, balance: Math.max(0, acc.balance + delta) };
+          }
+          return acc;
+        })
+      );
+    }
+  };
+
+  const confirmUnreviewedSingle = (id: string) => {
+    const item = unreviewedItems.find((u) => u.id === id);
+    if (!item) return;
+
+    const amountInDollars = item.amountInCents / 100;
+    addTransaction({
+      description: item.description,
       amount: amountInDollars,
-      date: new Date().toISOString().split('T')[0],
-      account: 'acc-debit-1',
-      status: 'confirmed',
-      sourceNotes: target.sourceNotes || 'Aprobado desde Bandeja de Entrada',
-      categoryBadgeColor: target.categoryBadgeColor
-    };
+      type: 'EXPENSE',
+      categoryId: 'cat-sub',
+      accountId: 'acc-debito',
+      notes: item.sourceNotes
+    });
 
-    setUnreviewedItems((prev) => prev.filter((i) => i.id !== id));
-    setTransactions((prev) => [newTx, ...prev]);
-
-    // Update account & budgets
-    setAccounts((prev) =>
-      prev.map((a) => (a.id === 'acc-debit-1' ? { ...a, balance: Math.max(0, a.balance - amountInDollars) } : a))
-    );
-
-    setBudgets((prev) =>
-      prev.map((b) => {
-        if (
-          (target.category === 'GROCERIES' && b.category.includes('Alimentación')) ||
-          (target.category === 'RESTAURANTS' && b.category.includes('Restaurantes')) ||
-          (target.category === 'ENTERTAINMENT' && b.category.includes('Entretenimiento')) ||
-          (target.category === 'TRANSPORTATION' && b.category.includes('Transporte'))
-        ) {
-          return { ...b, spent: b.spent + amountInDollars };
-        }
-        return b;
-      })
-    );
+    setUnreviewedItems((prev) => prev.filter((u) => u.id !== id));
   };
 
   const confirmAllUnreviewed = () => {
     unreviewedItems.forEach((item) => {
-      confirmUnreviewedSingle(item.id);
+      const amountInDollars = item.amountInCents / 100;
+      addTransaction({
+        description: item.description,
+        amount: amountInDollars,
+        type: 'EXPENSE',
+        categoryId: 'cat-groc',
+        accountId: 'acc-debito',
+        notes: item.sourceNotes
+      });
     });
+    setUnreviewedItems([]);
+  };
+
+  const rejectUnreviewedSingle = (id: string) => {
+    setUnreviewedItems((prev) => prev.filter((u) => u.id !== id));
+  };
+
+  const updateBudgetLimit = (id: string, newLimitInCents: number) => {
+    const limitInDollars = newLimitInCents / 100;
+    setBudgets((prev) =>
+      prev.map((b) => (b.id === id ? { ...b, limit: limitInDollars, limitInCents: newLimitInCents } : b))
+    );
   };
 
   const addAccount = (newAcc: { name: string; balance: number; type: 'checking' | 'credit' | 'cash' }) => {
@@ -417,6 +485,22 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
       id: `rec-${Date.now()}`
     };
     setRecurrings((prev) => [...prev, item]);
+  };
+
+  const removeRecurring = (id: string) => {
+    setRecurrings((prev) => prev.filter((r) => r.id !== id));
+  };
+
+  const toggleRecurringStatus = (id: string) => {
+    setRecurrings((prev) =>
+      prev.map((r) => {
+        if (r.id === id) {
+          const nextStatus = r.status === 'ACTIVE' ? 'PAUSED' : 'ACTIVE';
+          return { ...r, status: nextStatus as any };
+        }
+        return r;
+      })
+    );
   };
 
   const resetToDefaults = () => {
@@ -445,10 +529,16 @@ export const FinanceProvider: React.FC<{ children: React.ReactNode }> = ({ child
         netWorth,
         unreviewedCount: unreviewedItems.length,
         addTransaction,
+        deleteTransaction,
         confirmUnreviewedSingle,
         confirmAllUnreviewed,
+        rejectUnreviewedSingle,
+        updateBudgetLimit,
+        updateGlobalBudgetLimit,
         addAccount,
         addRecurring,
+        removeRecurring,
+        toggleRecurringStatus,
         resetToDefaults
       }}
     >

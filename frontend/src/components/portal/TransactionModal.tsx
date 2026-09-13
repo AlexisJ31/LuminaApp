@@ -108,10 +108,8 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
     const initialBal = newAccBalance ? parseFloat(newAccBalance) : 0;
     addAccount({
       name: newAccName.trim(),
-      type: 'CHECKING',
-      balance: initialBal,
-      currency: 'USD',
-      accountNumberMasked: '••• ' + Math.floor(1000 + Math.random() * 9000)
+      type: 'checking',
+      balance: initialBal
     });
 
     const newId = `acc-custom-${Date.now()}`;

@@ -17,7 +17,6 @@ export default function MonthlySpendingCard({
 
   const diffInCents = Math.abs(budgetedInCents - spentInCents);
   const isUnder = spentInCents <= budgetedInCents;
-  const pacingStatus = isUnder ? 'UNDER' : 'OVER';
 
   const formatMoney = (cents: number) => {
     return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
