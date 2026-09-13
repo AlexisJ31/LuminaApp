@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, DollarSign, Calendar, Tag, CreditCard, FileText, CheckCircle2, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { X, DollarSign, Calendar, Tag, CreditCard, FileText, CheckCircle2, ArrowUpRight, ArrowDownLeft, Plus } from 'lucide-react';
 import { useTransactions } from '../../hooks/useTransactions';
 
 interface TransactionModalProps {
@@ -8,17 +8,36 @@ interface TransactionModalProps {
   onClose: () => void;
 }
 
-const CATEGORIES = [
-  { id: 'cat-groc', name: 'Supermercado 🥑', icon: '🥑' },
-  { id: 'cat-rest', name: 'Restaurantes 🍔', icon: '🍔' },
-  { id: 'cat-trans', name: 'Transporte 🚗', icon: '🚗' },
-  { id: 'cat-sub', name: 'Subscripciones 🎬', icon: '🎬' },
-  { id: 'cat-[#080A0F]', name: 'Servicios Básicos 💡', icon: '💡' },
-  { id: 'cat-salary', name: 'Nómina / Salario 💰', icon: '💰' },
-  { id: 'cat-gen', name: 'General / Varios 📦', icon: '📦' }
+interface CategoryItem {
+  id: string;
+  name: string;
+  type: 'EXPENSE' | 'INCOME' | 'BOTH';
+}
+
+interface AccountItem {
+  id: string;
+  name: string;
+  balance: string;
+}
+
+const DEFAULT_CATEGORIES: CategoryItem[] = [
+  // Gastos
+  { id: 'cat-groc', name: 'Supermercado 🥑', type: 'EXPENSE' },
+  { id: 'cat-rest', name: 'Restaurantes 🍔', type: 'EXPENSE' },
+  { id: 'cat-trans', name: 'Transporte 🚗', type: 'EXPENSE' },
+  { id: 'cat-sub', name: 'Subscripciones 🎬', type: 'EXPENSE' },
+  { id: 'cat-serv', name: 'Servicios Básicos 💡', type: 'EXPENSE' },
+  { id: 'cat-exp-gen', name: 'Gastos Varios 📦', type: 'EXPENSE' },
+
+  // Ingresos
+  { id: 'cat-salary', name: 'Nómina / Salario 💰', type: 'INCOME' },
+  { id: 'cat-sales', name: 'Ventas / Emprendimiento 🏷️', type: 'INCOME' },
+  { id: 'cat-transf', name: 'Transferencias Entrantes 📲', type: 'INCOME' },
+  { id: 'cat-refund', name: 'Reembolso / Cashback 💸', type: 'INCOME' },
+  { id: 'cat-inc-gen', name: 'Otros Ingresos 📈', type: 'INCOME' }
 ];
 
-const ACCOUNTS = [
+const INITIAL_ACCOUNTS: AccountItem[] = [
   { id: 'acc-debit-1', name: 'Banco General Débito', balance: '$1,420.50' },
   { id: 'acc-credit-1', name: 'BAC Visa Crédito', balance: '$680.00' },
   { id: 'acc-cash-1', name: 'Efectivo Panamá', balance: '$150.00' }
@@ -27,6 +46,9 @@ const ACCOUNTS = [
 export default function TransactionModal({ isOpen, onClose }: TransactionModalProps) {
   const { createTransaction, isCreating } = useTransactions();
 
+  const [categories, setCategories] = useState<CategoryItem[]>(DEFAULT_CATEGORIES);
+  const [accounts, setAccounts] = useState<AccountItem[]>(INITIAL_ACCOUNTS);
+
   const [type, setType] = useState<'EXPENSE' | 'INCOME'>('EXPENSE');
   const [amount, setAmount] = useState<string>('');
   const [description, setDescription] = useState<string>('');
@@ -34,10 +56,57 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
   const [accountId, setAccountId] = useState<string>('acc-debit-1');
   const [notes, setNotes] = useState<string>('');
   const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
+
+  // Dynamic creation states
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCatName, setNewCatName] = useState('');
+  const [isAddingAccount, setIsAddingAccount] = useState(false);
+  const [newAccName, setNewAccName] = useState('');
+  const [newAccBalance, setNewAccBalance] = useState('');
+
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Filtrar categorías dinámicamente según el tipo (Gasto vs Ingreso) para evitar contradicciones
+  const availableCategories = categories.filter(c => c.type === type || c.type === 'BOTH');
+
+  // Cambiar categoría por defecto al alternar tipo
+  useEffect(() => {
+    const firstCat = availableCategories[0];
+    if (firstCat && !availableCategories.some(c => c.id === categoryId)) {
+      setCategoryId(firstCat.id);
+    }
+  }, [type]);
+
   if (!isOpen) return null;
+
+  // Sanitizar entrada de monto (evita números negativos o caracteres de guión '-')
+  const handleAmountChange = (val: string) => {
+    if (val.includes('-')) return;
+    setAmount(val);
+  };
+
+  const handleAddCategory = () => {
+    if (!newCatName.trim()) return;
+    const newId = `cat-custom-${Date.now()}`;
+    const newCat: CategoryItem = { id: newId, name: `${newCatName.trim()} 🏷️`, type };
+    setCategories(prev => [...prev, newCat]);
+    setCategoryId(newId);
+    setNewCatName('');
+    setIsAddingCategory(false);
+  };
+
+  const handleAddAccount = () => {
+    if (!newAccName.trim()) return;
+    const newId = `acc-custom-${Date.now()}`;
+    const formattedBalance = newAccBalance ? `$${parseFloat(newAccBalance).toFixed(2)}` : '$0.00';
+    const newAcc = { id: newId, name: newAccName.trim(), balance: formattedBalance };
+    setAccounts(prev => [...prev, newAcc]);
+    setAccountId(newId);
+    setNewAccName('');
+    setNewAccBalance('');
+    setIsAddingAccount(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,12 +114,12 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
 
     const parsedAmount = parseFloat(amount);
     if (isNaN(parsedAmount) || parsedAmount <= 0) {
-      setErrorMessage('Por favor ingresa un monto válido mayor a $0.00');
+      setErrorMessage('El monto debe ser un valor positivo mayor a $0.00 (sin guiones o signos negativos).');
       return;
     }
 
     if (!description.trim()) {
-      setErrorMessage('Por favor ingresa un nombre o descripción del gasto');
+      setErrorMessage('Por favor ingresa un nombre o descripción de la transacción.');
       return;
     }
 
@@ -70,7 +139,6 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
       setTimeout(() => {
         setIsSuccess(false);
         onClose();
-        // Reset form
         setAmount('');
         setDescription('');
         setNotes('');
@@ -82,32 +150,34 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+      {/* Full Fixed Viewport Overlay (fixed inset-0 h-screen w-screen z-[100]) */}
+      <div className="fixed inset-0 z-[100] w-screen h-screen min-h-screen flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
         
-        {/* Backdrop animation click to close */}
+        {/* Backdrop click to close */}
         <motion.div 
-          className="absolute inset-0 z-0" 
+          className="fixed inset-0 z-0 bg-black/60" 
           onClick={onClose}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         />
 
-        {/* Modal Card */}
+        {/* Modal Content Card */}
         <motion.div 
-          className="relative z-10 w-full max-w-lg bg-[#0E131F] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden text-white"
+          className="relative z-10 w-full max-w-lg bg-[#0E131F] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden text-white my-auto max-h-[90vh] overflow-y-auto"
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         >
-          {/* Top Bar Header */}
+          {/* Header */}
           <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
             <div>
               <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400">Captura Rápida 1-Tap</span>
               <h3 className="text-xl font-bold tracking-tight">Registrar Transacción</h3>
             </div>
             <button 
+              type="button"
               onClick={onClose}
               className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
             >
@@ -115,7 +185,6 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
             </button>
           </div>
 
-          {/* Success Overlay Feedback */}
           {isSuccess ? (
             <motion.div 
               className="py-12 flex flex-col items-center justify-center space-y-4 text-emerald-400"
@@ -129,7 +198,7 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
 
-              {/* Type Switcher Tabs (Gasto / Ingreso) */}
+              {/* Type Switcher Tabs (Gasto vs Ingreso) */}
               <div className="grid grid-cols-2 gap-2 p-1.5 bg-white/5 rounded-2xl border border-white/5">
                 <button
                   type="button"
@@ -141,7 +210,7 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                   }`}
                 >
                   <ArrowDownLeft className="w-4 h-4" />
-                  <span>Gasto (- Estatus)</span>
+                  <span>Gasto (- Saldo)</span>
                 </button>
 
                 <button
@@ -158,20 +227,24 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                 </button>
               </div>
 
-              {/* Amount Input Block */}
+              {/* Amount Input (Enforced Positives) */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-white/60 flex items-center space-x-1">
-                  <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Monto ($ USD / PAB)</span>
+                <label className="text-xs font-medium text-white/60 flex items-center justify-between">
+                  <span className="flex items-center space-x-1">
+                    <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Monto ($ USD / PAB)</span>
+                  </span>
+                  <span className="text-[10px] text-emerald-400/80 font-mono">Valores positivos mayores a $0</span>
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-mono text-white/40">$</span>
                   <input
                     type="number"
+                    min="0.01"
                     step="0.01"
                     placeholder="0.00"
                     value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
+                    onChange={(e) => handleAmountChange(e.target.value)}
                     autoFocus
                     className="w-full bg-white/5 border border-white/10 focus:border-emerald-500/50 rounded-2xl h-14 pl-9 pr-4 text-2xl font-mono font-bold text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
                   />
@@ -186,48 +259,133 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                 </label>
                 <input
                   type="text"
-                  placeholder="ej. Supermercado Riba Smith, Uber, Starbucks"
+                  placeholder={type === 'EXPENSE' ? 'ej. Supermercado Riba Smith, Uber, Starbucks' : 'ej. Pago de Nómina, Venta de Producto'}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
                 />
               </div>
 
-              {/* Category & Account Selectors Grid */}
+              {/* Smart Category & Account Selectors Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 
-                {/* Category Selector */}
+                {/* Category Selector (Filtered dynamically by Expense vs Income) */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-white/60 flex items-center space-x-1">
-                    <Tag className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Categoría</span>
-                  </label>
-                  <select
-                    value={categoryId}
-                    onChange={(e) => setCategoryId(e.target.value)}
-                    className="w-full bg-[#121824] border border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
-                  >
-                    {CATEGORIES.map(cat => (
-                      <option key={cat.id} value={cat.id}>{cat.name}</option>
-                    ))}
-                  </select>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-medium text-white/60 flex items-center space-x-1">
+                      <Tag className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Categoría ({type === 'EXPENSE' ? 'Gastos' : 'Ingresos'})</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingCategory(!isAddingCategory)}
+                      className="text-[11px] text-emerald-400 hover:underline flex items-center space-x-0.5"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Nueva</span>
+                    </button>
+                  </div>
+
+                  {isAddingCategory ? (
+                    <div className="space-y-2 p-2 bg-white/5 border border-emerald-500/30 rounded-xl">
+                      <input
+                        type="text"
+                        placeholder="Nombre de categoría..."
+                        value={newCatName}
+                        onChange={(e) => setNewCatName(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-lg h-9 px-3 text-xs text-white placeholder:text-white/30 focus:outline-none"
+                      />
+                      <div className="flex space-x-2">
+                        <button
+                          type="button"
+                          onClick={handleAddCategory}
+                          className="flex-1 bg-emerald-500 text-black font-bold text-[11px] h-7 rounded-md"
+                        >
+                          Guardar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsAddingCategory(false)}
+                          className="px-2 bg-white/10 text-white text-[11px] h-7 rounded-md"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <select
+                      value={categoryId}
+                      onChange={(e) => setCategoryId(e.target.value)}
+                      className="w-full bg-[#121824] border border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                    >
+                      {availableCategories.map(cat => (
+                        <option key={cat.id} value={cat.id}>{cat.name}</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
 
-                {/* Account Selector */}
+                {/* Account / Card Selector */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-white/60 flex items-center space-x-1">
-                    <CreditCard className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Cuenta de Origen</span>
-                  </label>
-                  <select
-                    value={accountId}
-                    onChange={(e) => setAccountId(e.target.value)}
-                    className="w-full bg-[#121824] border border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
-                  >
-                    {ACCOUNTS.map(acc => (
-                      <option key={acc.id} value={acc.id}>{acc.name} ({acc.balance})</option>
-                    ))}
-                  </select>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-medium text-white/60 flex items-center space-x-1">
+                      <CreditCard className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Cuenta / Tarjeta</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setIsAddingAccount(!isAddingAccount)}
+                      className="text-[11px] text-emerald-400 hover:underline flex items-center space-x-0.5"
+                    >
+                      <Plus className="w-3 h-3" />
+                      <span>Nueva</span>
+                    </button>
+                  </div>
+
+                  {isAddingAccount ? (
+                    <div className="space-y-2 p-2 bg-white/5 border border-emerald-500/30 rounded-xl">
+                      <input
+                        type="text"
+                        placeholder="ej. Yappy, Tarjeta Clave"
+                        value={newAccName}
+                        onChange={(e) => setNewAccName(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-lg h-9 px-3 text-xs text-white placeholder:text-white/30 focus:outline-none"
+                      />
+                      <input
+                        type="number"
+                        placeholder="Saldo inicial ($)..."
+                        value={newAccBalance}
+                        onChange={(e) => setNewAccBalance(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-lg h-9 px-3 text-xs text-white placeholder:text-white/30 focus:outline-none"
+                      />
+                      <div className="flex space-x-2">
+                        <button
+                          type="button"
+                          onClick={handleAddAccount}
+                          className="flex-1 bg-emerald-500 text-black font-bold text-[11px] h-7 rounded-md"
+                        >
+                          Guardar
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsAddingAccount(false)}
+                          className="px-2 bg-white/10 text-white text-[11px] h-7 rounded-md"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <select
+                      value={accountId}
+                      onChange={(e) => setAccountId(e.target.value)}
+                      className="w-full bg-[#121824] border border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                    >
+                      {accounts.map(acc => (
+                        <option key={acc.id} value={acc.id}>{acc.name} ({acc.balance})</option>
+                      ))}
+                    </select>
+                  )}
                 </div>
 
               </div>
@@ -246,7 +404,7 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                 />
               </div>
 
-              {/* Error Notification */}
+              {/* Error Alert */}
               {errorMessage && (
                 <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs animate-shake">
                   {errorMessage}
