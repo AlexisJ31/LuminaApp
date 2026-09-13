@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Eye, Code, Globe, ArrowLeft } from 'lucide-react';
 import LandingPage from './components/LandingPage';
 import LuminaLogo from './components/LuminaLogo';
+import UserLayout from './components/portal/UserLayout';
+import DashboardView from './components/portal/DashboardView';
+import TransactionsReviewCard from './components/portal/TransactionsReviewCard';
+import BudgetRings from './components/portal/BudgetRings';
 
 export default function App() {
-  const [view, setView] = useState<'landing' | 'register' | 'login'>('landing');
+  const [view, setView] = useState<'landing' | 'register' | 'login' | 'portal'>('landing');
+  const [portalTab, setPortalTab] = useState<string>('dashboard');
+  const [isNewTxModalOpen, setIsNewTxModalOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   // Load initial theme preference
@@ -36,11 +42,46 @@ export default function App() {
     });
   };
 
+  // Render Portal del Usuario
+  if (view === 'portal') {
+    return (
+      <UserLayout
+        currentTab={portalTab}
+        onTabChange={setPortalTab}
+        onOpenNewTransaction={() => setIsNewTxModalOpen(true)}
+        onNavigateHome={() => setView('landing')}
+        isDarkMode={isDarkMode}
+        toggleTheme={toggleTheme}
+      >
+        {isNewTxModalOpen && (
+          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs flex items-center justify-between animate-fade-in mb-4">
+            <span>Formulario para Registrar Gasto Rápido (1-Click FAB)</span>
+            <button onClick={() => setIsNewTxModalOpen(false)} className="px-3 py-1 bg-emerald-500/20 rounded-lg font-bold">Cerrar</button>
+          </div>
+        )}
+
+        {portalTab === 'dashboard' && <DashboardView />}
+        {portalTab === 'review' && <TransactionsReviewCard />}
+        {portalTab === 'budgets' && <BudgetRings />}
+        {portalTab !== 'dashboard' && portalTab !== 'review' && portalTab !== 'budgets' && (
+          <div className="p-6 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+            <h2 className="text-xl font-semibold text-white tracking-tight mb-2">
+              Sección: <span className="text-emerald-400 capitalize">{portalTab}</span>
+            </h2>
+            <p className="text-sm text-white/60">
+              Esta sección está conectada al backend y responderá dinámicamente.
+            </p>
+          </div>
+        )}
+      </UserLayout>
+    );
+  }
+
   // Render Landing Page
   if (view === 'landing') {
     return (
       <LandingPage 
-        onNavigate={setView} 
+        onNavigate={(newView) => setView(newView as any)} 
         isDarkMode={isDarkMode} 
         toggleTheme={toggleTheme} 
       />
@@ -154,7 +195,7 @@ export default function App() {
             </span>
           </div>
 
-          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); setView('portal'); }}>
             {view === 'register' && (
               <div className="grid grid-cols-2 gap-4">
                 <InputGroup label="First Name" placeholder="John" type="text" />

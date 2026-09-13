@@ -1,0 +1,152 @@
+// Schema de Prisma para LuminaApp (Finanzas Personales)
+// Cumple estrictamente con "Arquitectura_LuminaApp.docx"
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ------------------------------------------------------
+// Enums
+// ------------------------------------------------------
+
+enum AccountType {
+  DEBIT
+  CREDIT
+  CASH
+  SAVINGS
+  INVESTMENT
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionStatus {
+  UNREVIEWED
+  REVIEWED
+  REJECTED
+}
+
+enum TransactionSource {
+  MANUAL
+  WEBHOOK_N8N
+  IMPORT
+}
+
+enum BudgetPeriod {
+  MONTHLY
+  WEEKLY
+  YEARLY
+}
+
+// ------------------------------------------------------
+// Modelos Relacionales
+// ------------------------------------------------------
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  name         String?
+  currency     String        @default("USD")
+  timezone     String        @default("America/Panama")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  accounts     Account[]
+  categories   Category[]
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@map("users")
+}
+
+model Account {
+  id             String      @id @default(uuid())
+  userId         String
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name           String
+  type           AccountType @default(DEBIT)
+  
+  // REGULA: "El Dogma de la Moneda" (Almacenamiento en centavos de entero)
+  balanceInCents Int         @default(0)
+  
+  color          String?
+  isDefault      Boolean     @default(false)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  transactions   Transaction[]
+
+  @@map("accounts")
+}
+
+model Category {
+  id           String          @id @default(uuid())
+  userId       String?         // Nullable para categorías globales por defecto
+  user         User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name         String
+  icon         String          @default("tag")
+  color        String          @default("#3B82F6")
+  type         TransactionType @default(EXPENSE)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  transactions Transaction[]
+  budgets      Budget[]
+
+  @@map("categories")
+}
+
+model Transaction {
+  id             String            @id @default(uuid())
+  userId         String
+  user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId      String
+  account        Account           @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  categoryId     String
+  category       Category          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  
+  // REGULA: "El Dogma de la Moneda" (Todos los montos son enteros positivos en centavos)
+  amountInCents  Int
+  
+  type           TransactionType   @default(EXPENSE)
+  
+  // REGULA: Auditoría Status & Source
+  status         TransactionStatus @default(UNREVIEWED)
+  source         TransactionSource @default(MANUAL)
+  
+  description    String
+  notes          String?
+  date           DateTime          @default(now())
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([userId, date])
+  @@index([status])
+  @@map("transactions")
+}
+
+model Budget {
+  id           String       @id @default(uuid())
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId   String
+  category     Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  // REGULA: "El Dogma de la Moneda" (Límite almacenado en centavos de entero)
+  limitInCents Int
+  
+  period       BudgetPeriod @default(MONTHLY)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@unique([userId, categoryId, period])
+  @@map("budgets")
+}
