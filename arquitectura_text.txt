@@ -1,0 +1,28 @@
+Arquitectura y Plan de Implementación SaaS: LuminaApp
+Módulo de Finanzas Personales (Enfoque Backend-First & UX Móvil)
+1. Stack Tecnológico y Arquitectura Base
+• Motor de Base de Datos: PostgreSQL
+• Capa de Datos: Prisma ORM
+• Backend: Node.js (Express)
+• Frontend: React (Arquitectura móvil basada en Bottom Tab Bar)
+• Manejo de Estado Asíncrono: TanStack Query (React Query)
+• Autenticación y Seguridad: Supabase Auth / Clerk
+2. Reglas de Infraestructura Crítica (Fase 0)
+El Dogma de la Moneda: Todos los valores monetarios se almacenarán en la base de datos estrictamente como enteros (representando centavos). La división y formateo a decimal será responsabilidad exclusiva de la capa de presentación para evitar errores de precisión de punto flotante.
+Normalización Temporal: El servidor y la base de datos operarán por defecto en UTC. Toda transacción registrada se normalizará forzosamente a la zona horaria local (UTC-5, Panamá) al cruzar la capa de lógica de negocio, asegurando cortes de presupuesto exactos.
+Seguridad de Webhooks: Los endpoints expuestos para ingesta automatizada desde n8n estarán protegidos mediante validación estricta de encabezados (x-api-key) o firmas HMAC. Peticiones anónimas serán descartadas inmediatamente (HTTP 401).
+3. Fases de Desarrollo Estricto
+Fase 1: Capa de Datos y API REST
+• Modelado de esquema relacional en Prisma: User, Account, Category, Transaction, Budget.
+• Despliegue de endpoints CRUD fundamentales para gestión transaccional.
+• Implementación del webhook seguro para la recepción pasiva de datos externos.
+Fase 2: Interfaz Móvil Utilitaria (Flujo Core)
+• Construcción del Layout Móvil con Bottom Tab Bar y botón flotante masivo (FAB) enfocado en captura rápida a una mano.
+• Desarrollo de la vista "Inbox de Revisión" para confirmación o rechazo ágil de gastos inyectados automáticamente.
+• Implementación obligatoria de Optimistic Updates vía TanStack Query para latencia percibida cero.
+Fase 3: Lógica de Negocio (Pacing Engine)
+• Delegación del procesamiento de métricas pesadas (ritmo de gasto, cruces contra presupuestos) al backend mediante consultas agregadas de PostgreSQL.
+• El cliente únicamente consumirá el estado procesado (ej. OVER_BUDGET, UNDER_BUDGET) sin iterar sobre arreglos locales.
+Fase 4: Pulido de Interfaz (UX/UI)
+• Integración de visualizaciones interactivas con Recharts (gráfico spline).
+• Despliegue de indicadores circulares de progreso para el seguimiento de límites.

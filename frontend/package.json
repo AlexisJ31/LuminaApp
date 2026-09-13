@@ -10,10 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.69.0",
     "lucide-react": "^1.30.0",
     "motion": "^13.0.0",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "recharts": "^2.15.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
