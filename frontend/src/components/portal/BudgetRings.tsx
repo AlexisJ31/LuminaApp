@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Edit3, Check, X } from 'lucide-react';
+import { Edit3, Check, X, ShoppingBag, Utensils, Tv, Bus, Package } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 
 export interface BudgetRingItem {
   id: string;
   category: string;
-  emoji?: string;
   spentInCents: number;
   limitInCents: number;
   color: string;
@@ -21,6 +20,15 @@ export default function BudgetRings({ items }: { items?: BudgetRingItem[] }) {
 
   const formatMoney = (cents: number) => {
     return `$${(cents / 100).toFixed(2)}`;
+  };
+
+  const getCategoryIcon = (categoryName: string) => {
+    const cat = categoryName.toLowerCase();
+    if (cat.includes('alimentación') || cat.includes('super')) return <ShoppingBag className="w-5 h-5" />;
+    if (cat.includes('restaurante') || cat.includes('delivery')) return <Utensils className="w-5 h-5" />;
+    if (cat.includes('entretenimiento') || cat.includes('streaming')) return <Tv className="w-5 h-5" />;
+    if (cat.includes('transporte') || cat.includes('gasolina')) return <Bus className="w-5 h-5" />;
+    return <Package className="w-5 h-5" />;
   };
 
   const handleStartEdit = (id: string, currentLimitCents: number) => {
@@ -61,7 +69,6 @@ export default function BudgetRings({ items }: { items?: BudgetRingItem[] }) {
           const radius = 28;
           const circumference = 2 * Math.PI * radius;
           const strokeDashoffset = circumference - (pct / 100) * circumference;
-          const emojiIcon = item.emoji || '📦';
 
           return (
             <div 
@@ -105,10 +112,13 @@ export default function BudgetRings({ items }: { items?: BudgetRingItem[] }) {
                   />
                 </svg>
 
-                {/* Center Emoji Icon */}
-                <span className="absolute text-xl group-hover:scale-110 transition-transform">
-                  {emojiIcon}
-                </span>
+                {/* Center Icon */}
+                <div 
+                  className="absolute p-2 rounded-full transition-transform group-hover:scale-110"
+                  style={{ color: isOver ? '#EF4444' : item.color }}
+                >
+                  {getCategoryIcon(item.category)}
+                </div>
               </div>
 
               {/* Label & Status */}
