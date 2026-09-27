@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import transactionRoutes from './routes/transaction.routes';
 import authRoutes from './routes/auth.routes';
+import webhookRoutes from './routes/webhook.routes';
 
 dotenv.config();
 
@@ -35,14 +36,16 @@ app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
     service: 'LuminaApp Financial API',
-    version: '1.0.0-phase1',
+    version: '1.0.0-phase4',
     timestamp: new Date().toISOString()
   });
 });
 
 // Rutas de la API v1
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/webhooks', webhookRoutes);
 app.use('/api/v1', transactionRoutes);
+
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
