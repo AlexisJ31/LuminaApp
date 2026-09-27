@@ -92,15 +92,15 @@ export default function NotificationsPopover({ isOpen, onClose }: NotificationsP
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -10, scale: 0.95 }}
         transition={{ duration: 0.15, ease: 'easeOut' }}
-        className="absolute right-0 top-12 z-50 w-80 sm:w-96 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0E131F]/95 backdrop-blur-xl shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100 transition-colors duration-300"
+        className="absolute right-0 top-12 z-50 w-80 sm:w-96 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#0E131F] shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100 transition-colors duration-300"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
           <div className="flex items-center space-x-2">
-            <Bell className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
-            <span className="font-semibold text-sm tracking-tight text-slate-900 dark:text-white">Notificaciones</span>
+            <Bell className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="font-bold text-sm tracking-tight text-slate-900 dark:text-white">Notificaciones</span>
             {unreadCount > 0 && (
-              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
                 {unreadCount} nuevas
               </span>
             )}
@@ -110,7 +110,7 @@ export default function NotificationsPopover({ isOpen, onClose }: NotificationsP
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline transition-colors flex items-center space-x-1"
+                className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline transition-colors flex items-center space-x-1"
                 title="Marcar todas como leídas"
               >
                 <Check className="w-3 h-3" />
@@ -142,24 +142,24 @@ export default function NotificationsPopover({ isOpen, onClose }: NotificationsP
                     prev.map((n) => (n.id === item.id ? { ...n, read: true } : n))
                   );
                 }}
-                className={`p-3.5 flex items-start space-x-3 transition-colors cursor-pointer group hover:bg-white/5 ${
-                  !item.read ? 'bg-emerald-500/5' : ''
+                className={`p-3.5 flex items-start space-x-3 transition-colors cursor-pointer group hover:bg-slate-50 dark:hover:bg-white/5 ${
+                  !item.read ? 'bg-emerald-50/70 dark:bg-emerald-500/5' : ''
                 }`}
               >
                 {/* Icon Badge */}
                 <div className="mt-0.5 shrink-0">
                   {item.type === 'webhook' && (
-                    <div className="w-8 h-8 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center border border-purple-500/30">
+                    <div className="w-8 h-8 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center border border-purple-500/30">
                       <Zap className="w-4 h-4" />
                     </div>
                   )}
                   {item.type === 'budget_alert' && (
-                    <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
+                    <div className="w-8 h-8 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/30">
                       <AlertTriangle className="w-4 h-4" />
                     </div>
                   )}
                   {item.type === 'recurring' && (
-                    <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center border border-blue-500/30">
+                    <div className="w-8 h-8 rounded-xl bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center border border-blue-500/30">
                       <Calendar className="w-4 h-4" />
                     </div>
                   )}
@@ -168,12 +168,12 @@ export default function NotificationsPopover({ isOpen, onClose }: NotificationsP
                 {/* Body */}
                 <div className="flex-1 min-w-0 space-y-0.5">
                   <div className="flex items-center justify-between">
-                    <p className={`text-xs font-semibold tracking-tight ${!item.read ? 'text-white' : 'text-white/70'}`}>
+                    <p className={`text-xs tracking-tight ${!item.read ? 'text-slate-900 dark:text-white font-bold' : 'text-slate-700 dark:text-white/70 font-medium'}`}>
                       {item.title}
                     </p>
-                    <span className="text-[10px] text-white/40">{item.time}</span>
+                    <span className="text-[10px] text-slate-400 dark:text-white/40">{item.time}</span>
                   </div>
-                  <p className="text-[11px] text-white/60 leading-snug truncate">
+                  <p className="text-[11px] text-slate-600 dark:text-white/60 leading-snug truncate">
                     {item.message}
                   </p>
                 </div>
@@ -181,7 +181,7 @@ export default function NotificationsPopover({ isOpen, onClose }: NotificationsP
                 {/* Dismiss Action */}
                 <button
                   onClick={(e) => removeNotification(item.id, e)}
-                  className="opacity-0 group-hover:opacity-100 p-1 text-white/30 hover:text-white transition-opacity"
+                  className="opacity-0 group-hover:opacity-100 p-1 text-slate-400 hover:text-slate-700 dark:text-white/30 dark:hover:text-white transition-opacity"
                   title="Eliminar notificación"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -192,8 +192,8 @@ export default function NotificationsPopover({ isOpen, onClose }: NotificationsP
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-2 bg-white/5 border-t border-white/10 text-center">
-          <span className="text-[10px] text-white/40">
+        <div className="px-4 py-2.5 bg-slate-50 dark:bg-white/5 border-t border-slate-200 dark:border-white/10 text-center">
+          <span className="text-[10px] text-slate-500 dark:text-white/40 font-medium">
             Sincronizado en tiempo real con n8n y Lumina Engine
           </span>
         </div>
