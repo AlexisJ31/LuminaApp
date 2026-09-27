@@ -39,7 +39,6 @@ export function showLocalNotification(title: string, options?: NotificationOptio
     new Notification(title, {
       icon: '/vite.svg',
       badge: '/vite.svg',
-      vibrate: [100, 50, 100],
       ...options
     });
   }
