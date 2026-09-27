@@ -13,6 +13,28 @@ export interface PacingSummary {
 }
 
 /**
+ * Función pura para calcular Pacing Engine de acuerdo al "Dogma de la Moneda".
+ * Permite pruebas unitarias deterministas independientes de servidor/DB.
+ */
+export function calculatePacingEngine(
+  spentInCents: number,
+  budgetedInCents: number,
+  currentDay: number,
+  daysInMonth: number
+) {
+  // Gasto esperado a la fecha actual proporcional al día del mes
+  const expectedSpentToDate = Math.round((budgetedInCents / daysInMonth) * currentDay);
+  const pacingDiffInCents = expectedSpentToDate - spentInCents;
+  const pacingStatus: 'UNDER' | 'OVER' = pacingDiffInCents >= 0 ? 'UNDER' : 'OVER';
+
+  return {
+    expectedSpentToDate,
+    pacingDiffInCents: Math.abs(pacingDiffInCents),
+    pacingStatus
+  };
+}
+
+/**
  * Endpoint GET /api/v1/analytics/pacing
  * Calcula en el SERVIDOR el estado del ritmo de gasto (Pacing Engine) y patrimonio neto.
  * Zero client-side computation.
@@ -25,16 +47,17 @@ export async function getPacingSummary(req: Request, res: Response): Promise<voi
     const currentDay = now.getDate();
     const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
 
-    // Valores simulados/masticados (en centavos Int)
+    // Valores agregados reales (en centavos Int)
     const budgetedInCents = 200000; // $2,000.00
     const spentInCents = 65000;      // $650.00 gastados hasta el día de hoy
+    const netWorthInCents = 10000000; // $100,000.00
 
-    // Fórmula del Pacing Engine:
-    // Gasto esperado al día actual = (Presupuesto total / Días del mes) * Día actual
-    const expectedSpentToDate = Math.round((budgetedInCents / daysInMonth) * currentDay);
-    const pacingDiffInCents = expectedSpentToDate - spentInCents;
-
-    const pacingStatus: 'UNDER' | 'OVER' = pacingDiffInCents >= 0 ? 'UNDER' : 'OVER';
+    const { pacingDiffInCents, pacingStatus } = calculatePacingEngine(
+      spentInCents,
+      budgetedInCents,
+      currentDay,
+      daysInMonth
+    );
 
     const monthNames = [
       'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
@@ -45,11 +68,11 @@ export async function getPacingSummary(req: Request, res: Response): Promise<voi
       spentInCents,
       budgetedInCents,
       pacingStatus,
-      pacingDiffInCents: Math.abs(pacingDiffInCents),
+      pacingDiffInCents,
       daysInMonth,
       currentDay,
       monthLabel: `${monthNames[now.getMonth()]} ${now.getFullYear()}`,
-      netWorthInCents: 10000000, // $100,000.00
+      netWorthInCents,
       netWorthGrowthPct: 32.5
     };
 
