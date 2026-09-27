@@ -15,6 +15,12 @@ interface CashflowChartProps {
 export default function CashflowChart({ data }: CashflowChartProps) {
   const { transactions, budgetLimit } = useFinance();
 
+  const currentDay = useMemo(() => new Date().getDate(), []);
+  const totalDaysInMonth = useMemo(() => {
+    const now = new Date();
+    return new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  }, []);
+
   const dynamicChartData = useMemo(() => {
     if (data && data.length > 0) return data;
 
@@ -22,8 +28,15 @@ export default function CashflowChart({ data }: CashflowChartProps) {
       .filter(t => t.type === 'EXPENSE' && (String(t.status).toLowerCase() === 'confirmed'))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    const days = [1, 5, 10, 15, 20, 25, 30];
+    // Generate checkpoints including currentDay so today has an exact node
+    const baseDays = [1, 5, 10, 15, 20, 25, totalDaysInMonth];
+    const days = Array.from(new Set([...baseDays, currentDay]))
+      .filter(d => d <= totalDaysInMonth)
+      .sort((a, b) => a - b);
+
     return days.map(d => {
+      const isFuture = d > currentDay;
+
       const sum = sorted
         .filter(t => {
           const tDay = new Date(t.date).getDate();
@@ -31,16 +44,19 @@ export default function CashflowChart({ data }: CashflowChartProps) {
         })
         .reduce((acc, t) => acc + t.amount, 0);
 
-      const expectedPacing = Math.round((budgetLimit / 30) * d);
+      const expectedPacing = Math.round((budgetLimit / totalDaysInMonth) * d);
+
       return {
-        day: `Día ${d}`,
-        spent: Math.round(sum),
+        day: d === currentDay ? `Día ${d} (Hoy)` : `Día ${d}`,
+        dayNum: d,
+        spent: isFuture ? (null as unknown as number) : Math.round(sum),
         expected: expectedPacing
       };
     });
-  }, [transactions, budgetLimit, data]);
+  }, [transactions, budgetLimit, data, currentDay, totalDaysInMonth]);
 
   const chartPoints = data || dynamicChartData;
+
   return (
     <div className="w-full h-48 sm:h-56 pt-2 select-none">
       <ResponsiveContainer width="100%" height="100%">
@@ -70,11 +86,16 @@ export default function CashflowChart({ data }: CashflowChartProps) {
           <Tooltip 
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
-                const item = payload[0].payload as ChartDataPoint;
+                const item = payload[0].payload as any;
+                const hasSpent = item.spent !== null && item.spent !== undefined;
                 return (
                   <div className="bg-white/95 dark:bg-[#080A0F]/90 backdrop-blur-md border border-slate-200 dark:border-white/10 p-2.5 rounded-xl text-xs space-y-1 shadow-xl text-slate-900 dark:text-white">
                     <p className="text-slate-500 dark:text-white/40 text-[10px] font-semibold">{item.day}</p>
-                    <p className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">Gasto Real: ${item.spent}.00</p>
+                    {hasSpent ? (
+                      <p className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">Gasto Real: ${item.spent}.00</p>
+                    ) : (
+                      <p className="text-slate-400 font-mono text-[11px] italic">Día futuro (sin registrar)</p>
+                    )}
                     <p className="text-blue-600 dark:text-blue-400 font-mono text-[11px]">Proyectado: ${item.expected}.00</p>
                   </div>
                 );
@@ -96,6 +117,7 @@ export default function CashflowChart({ data }: CashflowChartProps) {
             dataKey="spent" 
             stroke="#10B981" 
             strokeWidth={3} 
+            connectNulls={false}
             fillOpacity={1} 
             fill="url(#emeraldGradient)" 
           />

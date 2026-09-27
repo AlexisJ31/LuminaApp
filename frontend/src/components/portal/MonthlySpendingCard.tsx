@@ -15,11 +15,17 @@ export default function MonthlySpendingCard({
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const [editVal, setEditVal] = useState<string>('');
 
+  const now = new Date();
+  const currentDay = now.getDate();
+  const totalDaysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+
   const spentInCents = Math.round(totalSpent * 100);
   const budgetedInCents = Math.round(budgetLimit * 100);
 
-  const diffInCents = Math.abs(budgetedInCents - spentInCents);
-  const isUnder = spentInCents <= budgetedInCents;
+  // Expected pacing up to today
+  const expectedPacingToTodayCents = Math.round(((budgetLimit / totalDaysInMonth) * currentDay) * 100);
+  const pacingDiffCents = Math.abs(expectedPacingToTodayCents - spentInCents);
+  const isUnderPacing = spentInCents <= expectedPacingToTodayCents;
 
   const formatMoney = (cents: number) => {
     return `$${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -38,7 +44,7 @@ export default function MonthlySpendingCard({
       
       {/* Background Subtle Gradient Glow */}
       <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none ${
-        isUnder ? 'bg-emerald-500/5' : 'bg-rose-500/5'
+        isUnderPacing ? 'bg-emerald-500/5' : 'bg-rose-500/5'
       }`} />
 
       {/* Card Header */}
@@ -48,14 +54,14 @@ export default function MonthlySpendingCard({
           <h3 className="text-base font-semibold text-slate-900 dark:text-white tracking-tight">Gasto Mensual Acumulado</h3>
         </div>
 
-        {/* Pacing Anchor Badge (Servidor) */}
+        {/* Pacing Anchor Badge */}
         <div className={`flex items-center space-x-1.5 px-3 py-1 rounded-full border text-xs font-bold shadow-lg transition-all ${
-          isUnder 
+          isUnderPacing 
             ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 shadow-emerald-500/10' 
             : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30 shadow-rose-500/10'
         }`}>
-          {isUnder ? <TrendingDown className="w-3.5 h-3.5" /> : <TrendingUp className="w-3.5 h-3.5" />}
-          <span>{formatMoney(diffInCents)} {isUnder ? 'bajo presupuesto' : 'sobre límite'}</span>
+          {isUnderPacing ? <TrendingDown className="w-3.5 h-3.5" /> : <TrendingUp className="w-3.5 h-3.5" />}
+          <span>{formatMoney(pacingDiffCents)} {isUnderPacing ? 'bajo ritmo ideal' : 'sobre ritmo ideal'}</span>
         </div>
       </div>
 
@@ -108,7 +114,7 @@ export default function MonthlySpendingCard({
           )}
         </div>
         <p className="text-xs text-slate-500 dark:text-white/50">
-          Cálculo del ritmo de gasto procesado en tiempo real (UTC-5 Panamá)
+          Gasto real registrado al Día {currentDay} de {totalDaysInMonth} (UTC-5 Panamá)
         </p>
       </div>
 
