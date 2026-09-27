@@ -13,7 +13,7 @@ interface CashflowChartProps {
 }
 
 export default function CashflowChart({ data }: CashflowChartProps) {
-  const { transactions } = useFinance();
+  const { transactions, budgetLimit } = useFinance();
 
   const dynamicChartData = useMemo(() => {
     if (data && data.length > 0) return data;
@@ -22,7 +22,7 @@ export default function CashflowChart({ data }: CashflowChartProps) {
       .filter(t => t.type === 'EXPENSE' && (String(t.status).toLowerCase() === 'confirmed'))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    const days = [1, 3, 5, 7, 9, 11, 13, 15];
+    const days = [1, 5, 10, 15, 20, 25, 30];
     return days.map(d => {
       const sum = sorted
         .filter(t => {
@@ -31,14 +31,14 @@ export default function CashflowChart({ data }: CashflowChartProps) {
         })
         .reduce((acc, t) => acc + t.amount, 0);
 
-      const expectedPacing = Math.round((2000 / 30) * d);
+      const expectedPacing = Math.round((budgetLimit / 30) * d);
       return {
-        day: `Dia ${d}`,
+        day: `Día ${d}`,
         spent: Math.round(sum),
         expected: expectedPacing
       };
     });
-  }, [transactions]);
+  }, [transactions, budgetLimit, data]);
 
   const chartPoints = data || dynamicChartData;
   return (
