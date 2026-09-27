@@ -14,13 +14,13 @@ export default function BottomNav({
   unreviewedCount = 3 
 }: BottomNavProps) {
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#080A0F]/95 backdrop-blur-xl border-t border-white/10 z-50 flex items-center justify-around px-2 select-none shadow-2xl">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/95 dark:bg-[#080A0F]/95 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 z-50 flex items-center justify-around px-2 select-none shadow-2xl transition-colors duration-300">
       
       {/* 1. Tab Dashboard */}
       <button 
         onClick={() => onTabChange('dashboard')}
         className={`flex flex-col items-center justify-center w-14 py-1 transition-colors ${
-          currentTab === 'dashboard' ? 'text-white font-semibold' : 'text-white/40 hover:text-white/70'
+          currentTab === 'dashboard' ? 'text-slate-900 dark:text-white font-semibold' : 'text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
         }`}
       >
         <LayoutDashboard className="w-5 h-5 mb-0.5" />
@@ -31,7 +31,7 @@ export default function BottomNav({
       <button 
         onClick={() => onTabChange('review')}
         className={`flex flex-col items-center justify-center w-14 py-1 relative transition-colors ${
-          currentTab === 'review' ? 'text-white font-semibold' : 'text-white/40 hover:text-white/70'
+          currentTab === 'review' ? 'text-slate-900 dark:text-white font-semibold' : 'text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
         }`}
       >
         <div className="relative">
@@ -49,7 +49,7 @@ export default function BottomNav({
       <div className="relative -top-5 flex items-center justify-center">
         <button
           onClick={onOpenNewTransaction}
-          className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 text-black flex items-center justify-center shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all duration-200 ring-4 ring-[#080A0F]"
+          className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 text-black flex items-center justify-center shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all duration-200 ring-4 ring-slate-50 dark:ring-[#080A0F]"
           aria-label="Registrar Gasto Rápido"
         >
           <Plus className="w-7 h-7 stroke-[2.5]" />
@@ -60,7 +60,7 @@ export default function BottomNav({
       <button 
         onClick={() => onTabChange('budgets')}
         className={`flex flex-col items-center justify-center w-14 py-1 transition-colors ${
-          currentTab === 'budgets' ? 'text-white font-semibold' : 'text-white/40 hover:text-white/70'
+          currentTab === 'budgets' ? 'text-slate-900 dark:text-white font-semibold' : 'text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
         }`}
       >
         <PieChart className="w-5 h-5 mb-0.5" />
@@ -71,7 +71,7 @@ export default function BottomNav({
       <button 
         onClick={() => onTabChange('settings')}
         className={`flex flex-col items-center justify-center w-14 py-1 transition-colors ${
-          currentTab === 'settings' ? 'text-white font-semibold' : 'text-white/40 hover:text-white/70'
+          currentTab === 'settings' ? 'text-slate-900 dark:text-white font-semibold' : 'text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
         }`}
       >
         <User className="w-5 h-5 mb-0.5" />

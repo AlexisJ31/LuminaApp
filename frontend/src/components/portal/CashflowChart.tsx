@@ -59,12 +59,12 @@ export default function CashflowChart({ data }: CashflowChartProps) {
             dataKey="day" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#ffffff40', fontSize: 10 }} 
+            tick={{ fill: '#64748b', fontSize: 10 }} 
           />
           <YAxis 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#ffffff40', fontSize: 10 }}
+            tick={{ fill: '#64748b', fontSize: 10 }}
             tickFormatter={(value) => `$${value}`}
           />
           <Tooltip 
@@ -72,10 +72,10 @@ export default function CashflowChart({ data }: CashflowChartProps) {
               if (active && payload && payload.length) {
                 const item = payload[0].payload as ChartDataPoint;
                 return (
-                  <div className="bg-[#080A0F]/90 backdrop-blur-md border border-white/10 p-2.5 rounded-xl text-xs space-y-1 shadow-xl">
-                    <p className="text-white/40 text-[10px] font-semibold">{item.day}</p>
-                    <p className="text-emerald-400 font-mono font-bold">Gasto Real: ${item.spent}.00</p>
-                    <p className="text-blue-400 font-mono text-[11px]">Proyectado: ${item.expected}.00</p>
+                  <div className="bg-white/95 dark:bg-[#080A0F]/90 backdrop-blur-md border border-slate-200 dark:border-white/10 p-2.5 rounded-xl text-xs space-y-1 shadow-xl text-slate-900 dark:text-white">
+                    <p className="text-slate-500 dark:text-white/40 text-[10px] font-semibold">{item.day}</p>
+                    <p className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">Gasto Real: ${item.spent}.00</p>
+                    <p className="text-blue-600 dark:text-blue-400 font-mono text-[11px]">Proyectado: ${item.expected}.00</p>
                   </div>
                 );
               }

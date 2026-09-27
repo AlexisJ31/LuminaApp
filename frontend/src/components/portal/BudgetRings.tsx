@@ -37,15 +37,15 @@ export default function BudgetRings({ items }: { items?: BudgetRingItem[] }) {
   };
 
   return (
-    <div className="w-full bg-[#121824] border border-white/5 rounded-3xl p-5 sm:p-6 backdrop-blur-xl space-y-4 shadow-2xl select-none">
+    <div className="w-full bg-white dark:bg-[#121824] border border-slate-200 dark:border-white/5 rounded-3xl p-5 sm:p-6 backdrop-blur-xl space-y-4 shadow-2xl select-none transition-colors duration-300">
       
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-white tracking-tight">Presupuestos por Categoría</h3>
-          <p className="text-xs text-white/40">Anillos de progreso y límites mensuales (haz clic para editar)</p>
+          <h3 className="text-base font-semibold text-slate-900 dark:text-white tracking-tight">Presupuestos por Categoría</h3>
+          <p className="text-xs text-slate-500 dark:text-white/40">Anillos de progreso y límites mensuales (haz clic para editar)</p>
         </div>
-        <span className="text-xs font-mono font-bold text-white/60">{ringItems.length} Categorías Activas</span>
+        <span className="text-xs font-mono font-bold text-slate-600 dark:text-white/60">{ringItems.length} Categorías Activas</span>
       </div>
 
       {/* Grid of Category Rings */}
@@ -66,12 +66,12 @@ export default function BudgetRings({ items }: { items?: BudgetRingItem[] }) {
           return (
             <div 
               key={item.id} 
-              className="relative flex flex-col items-center justify-center p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 hover:border-white/20 transition-all text-center space-y-2 group cursor-pointer"
+              className="relative flex flex-col items-center justify-center p-3.5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/20 transition-all text-center space-y-2 group cursor-pointer"
             >
               {/* Edit Limit Trigger */}
               <button
                 onClick={() => handleStartEdit(item.id, limitCents)}
-                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1 text-white/40 hover:text-emerald-400 transition-all"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1 text-slate-400 dark:text-white/40 hover:text-emerald-500 transition-all"
                 title="Editar Límite"
               >
                 <Edit3 className="w-3.5 h-3.5" />
@@ -85,7 +85,7 @@ export default function BudgetRings({ items }: { items?: BudgetRingItem[] }) {
                     cx="40"
                     cy="40"
                     r={radius}
-                    stroke="#ffffff10"
+                    className="stroke-slate-200 dark:stroke-white/10"
                     strokeWidth="6"
                     fill="transparent"
                   />
@@ -113,27 +113,27 @@ export default function BudgetRings({ items }: { items?: BudgetRingItem[] }) {
 
               {/* Label & Status */}
               <div>
-                <p className="text-xs font-semibold text-white truncate max-w-[100px] mx-auto">{item.category}</p>
+                <p className="text-xs font-semibold text-slate-900 dark:text-white truncate max-w-[100px] mx-auto">{item.category}</p>
                 <span className={`text-[10px] font-mono font-bold block mt-0.5 ${
-                  isOver ? 'text-rose-400' : 'text-emerald-400'
+                  isOver ? 'text-rose-500 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
                 }`}>
                   {isOver ? `${formatMoney(diffCents)} over` : `${formatMoney(diffCents)} left`}
                 </span>
-                <span className="text-[9px] text-white/30 block mt-0.5 font-mono">
+                <span className="text-[9px] text-slate-500 dark:text-white/30 block mt-0.5 font-mono">
                   Límite: {formatMoney(limitCents)}
                 </span>
               </div>
 
               {/* Inline Edit Popover */}
               {editingId === item.id && (
-                <div className="absolute inset-0 z-20 bg-[#0E131F] border border-emerald-500/50 rounded-2xl p-3 flex flex-col justify-between shadow-2xl animate-in fade-in duration-150">
-                  <span className="text-[10px] text-emerald-400 font-bold">Editar Límite ($)</span>
+                <div className="absolute inset-0 z-20 bg-white dark:bg-[#0E131F] border border-emerald-500/50 rounded-2xl p-3 flex flex-col justify-between shadow-2xl animate-in fade-in duration-150">
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold">Editar Límite ($)</span>
                   <input
                     type="number"
                     value={editLimitVal}
                     onChange={(e) => setEditLimitVal(e.target.value)}
                     autoFocus
-                    className="w-full bg-white/10 border border-white/20 rounded-lg h-7 px-2 text-xs font-mono text-white text-center focus:outline-none focus:border-emerald-400"
+                    className="w-full bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/20 rounded-lg h-7 px-2 text-xs font-mono text-slate-900 dark:text-white text-center focus:outline-none focus:border-emerald-500"
                   />
                   <div className="flex space-x-1">
                     <button
@@ -144,7 +144,7 @@ export default function BudgetRings({ items }: { items?: BudgetRingItem[] }) {
                     </button>
                     <button
                       onClick={() => setEditingId(null)}
-                      className="px-2 bg-white/10 text-white text-[10px] h-6 rounded flex items-center justify-center"
+                      className="px-2 bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white text-[10px] h-6 rounded flex items-center justify-center"
                     >
                       <X className="w-3 h-3" />
                     </button>

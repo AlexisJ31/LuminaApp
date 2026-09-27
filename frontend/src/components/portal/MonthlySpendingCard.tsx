@@ -23,7 +23,7 @@ export default function MonthlySpendingCard({
   };
 
   return (
-    <div className="w-full bg-[#121824] border border-white/5 rounded-3xl p-5 sm:p-6 backdrop-blur-xl space-y-4 shadow-2xl relative overflow-hidden select-none">
+    <div className="w-full bg-white dark:bg-[#121824] border border-slate-200 dark:border-white/5 rounded-3xl p-5 sm:p-6 backdrop-blur-xl space-y-4 shadow-2xl relative overflow-hidden select-none transition-colors duration-300">
       
       {/* Background Subtle Gradient Glow */}
       <div className={`absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl pointer-events-none ${
@@ -33,15 +33,15 @@ export default function MonthlySpendingCard({
       {/* Card Header */}
       <div className="flex items-center justify-between">
         <div>
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-white/40">{monthLabel}</span>
-          <h3 className="text-base font-semibold text-white tracking-tight">Gasto Mensual Acumulado</h3>
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-white/40">{monthLabel}</span>
+          <h3 className="text-base font-semibold text-slate-900 dark:text-white tracking-tight">Gasto Mensual Acumulado</h3>
         </div>
 
         {/* Pacing Anchor Badge (Servidor) */}
         <div className={`flex items-center space-x-1.5 px-3 py-1 rounded-full border text-xs font-bold shadow-lg transition-all ${
           isUnder 
-            ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 shadow-emerald-500/10' 
-            : 'bg-rose-500/10 text-rose-400 border-rose-500/30 shadow-rose-500/10'
+            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 shadow-emerald-500/10' 
+            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30 shadow-rose-500/10'
         }`}>
           {isUnder ? <TrendingDown className="w-3.5 h-3.5" /> : <TrendingUp className="w-3.5 h-3.5" />}
           <span>{formatMoney(diffInCents)} {isUnder ? 'bajo presupuesto' : 'sobre límite'}</span>
@@ -51,14 +51,14 @@ export default function MonthlySpendingCard({
       {/* Main KPI Display */}
       <div className="space-y-1">
         <div className="flex items-baseline space-x-2">
-          <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white font-mono">
+          <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white font-mono">
             {formatMoney(spentInCents)}
           </span>
-          <span className="text-xs text-white/40">
+          <span className="text-xs text-slate-500 dark:text-white/40">
             de {formatMoney(budgetedInCents)} presupuestados
           </span>
         </div>
-        <p className="text-xs text-white/50">
+        <p className="text-xs text-slate-500 dark:text-white/50">
           Cálculo del ritmo de gasto procesado en tiempo real (UTC-5 Panamá)
         </p>
       </div>

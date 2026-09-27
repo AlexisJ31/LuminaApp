@@ -194,22 +194,22 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
 
         {/* Modal Content Card */}
         <motion.div 
-          className="relative z-10 w-full max-w-lg bg-[#0E131F] border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden text-white my-auto max-h-[90vh] overflow-y-auto"
+          className="relative z-10 w-full max-w-lg bg-white dark:bg-[#0E131F] border border-slate-200 dark:border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden text-slate-900 dark:text-white my-auto max-h-[90vh] overflow-y-auto transition-colors duration-300"
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-6">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-6">
             <div>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400">Captura Rápida 1-Tap</span>
-              <h3 className="text-xl font-bold tracking-tight">Registrar Transacción</h3>
+              <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-600 dark:text-emerald-400">Captura Rápida 1-Tap</span>
+              <h3 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Registrar Transacción</h3>
             </div>
             <button 
               type="button"
               onClick={onClose}
-              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors"
+              className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -217,26 +217,26 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
 
           {isSuccess ? (
             <motion.div 
-              className="py-12 flex flex-col items-center justify-center space-y-4 text-emerald-400"
+              className="py-12 flex flex-col items-center justify-center space-y-4 text-emerald-600 dark:text-emerald-400"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
             >
               <CheckCircle2 className="w-16 h-16 animate-bounce" />
-              <span className="text-lg font-bold text-white">¡Transacción Registrada Exitosamente!</span>
-              <span className="text-xs text-white/50">Actualizando tu Pacing Engine e Historial...</span>
+              <span className="text-lg font-bold text-slate-900 dark:text-white">¡Transacción Registrada Exitosamente!</span>
+              <span className="text-xs text-slate-500 dark:text-white/50">Actualizando tu Pacing Engine e Historial...</span>
             </motion.div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
 
               {/* Type Switcher Tabs (Gasto vs Ingreso) */}
-              <div className="grid grid-cols-2 gap-2 p-1.5 bg-white/5 rounded-2xl border border-white/5">
+              <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-100 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/5">
                 <button
                   type="button"
                   onClick={() => setType('EXPENSE')}
                   className={`flex items-center justify-center space-x-2 py-2.5 rounded-xl font-semibold text-xs transition-all ${
                     type === 'EXPENSE'
-                      ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30 shadow-lg shadow-rose-500/10'
-                      : 'text-white/40 hover:text-white'
+                      ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 shadow-lg shadow-rose-500/10'
+                      : 'text-slate-500 dark:text-white/40 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   <ArrowDownLeft className="w-4 h-4" />
@@ -248,8 +248,8 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                   onClick={() => setType('INCOME')}
                   className={`flex items-center justify-center space-x-2 py-2.5 rounded-xl font-semibold text-xs transition-all ${
                     type === 'INCOME'
-                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-lg shadow-emerald-500/10'
-                      : 'text-white/40 hover:text-white'
+                      ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-lg shadow-emerald-500/10'
+                      : 'text-slate-500 dark:text-white/40 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   <ArrowUpRight className="w-4 h-4" />
@@ -259,15 +259,15 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
 
               {/* Amount Input (Enforced Positives) */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-white/60 flex items-center justify-between">
+                <label className="text-xs font-medium text-slate-600 dark:text-white/60 flex items-center justify-between">
                   <span className="flex items-center space-x-1">
-                    <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+                    <DollarSign className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                     <span>Monto ($ USD / PAB)</span>
                   </span>
-                  <span className="text-[10px] text-emerald-400/80 font-mono">Valores positivos mayores a $0</span>
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400/80 font-mono">Valores positivos mayores a $0</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-mono text-white/40">$</span>
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-mono text-slate-400 dark:text-white/40">$</span>
                   <input
                     type="number"
                     min="0.01"
@@ -276,15 +276,15 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                     value={amount}
                     onChange={(e) => handleAmountChange(e.target.value)}
                     autoFocus
-                    className="w-full bg-white/5 border border-white/10 focus:border-emerald-500/50 rounded-2xl h-14 pl-9 pr-4 text-2xl font-mono font-bold text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:border-emerald-500/50 rounded-2xl h-14 pl-9 pr-4 text-2xl font-mono font-bold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
                   />
                 </div>
               </div>
 
               {/* Description Input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-white/60 flex items-center space-x-1">
-                  <FileText className="w-3.5 h-3.5 text-emerald-400" />
+                <label className="text-xs font-medium text-slate-600 dark:text-white/60 flex items-center space-x-1">
+                  <FileText className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                   <span>Nombre / Comercio / Descripción</span>
                 </label>
                 <input
@@ -292,7 +292,7 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                   placeholder={type === 'EXPENSE' ? 'ej. Supermercado Riba Smith, Uber, Starbucks' : 'ej. Pago de Nómina, Venta de Producto'}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-4 text-sm text-white placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                  className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
                 />
               </div>
 
@@ -302,14 +302,14 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                 {/* Category Selector (Filtered dynamically by Expense vs Income) */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-medium text-white/60 flex items-center space-x-1">
-                      <Tag className="w-3.5 h-3.5 text-emerald-400" />
+                    <label className="text-xs font-medium text-slate-600 dark:text-white/60 flex items-center space-x-1">
+                      <Tag className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                       <span>Categoría ({type === 'EXPENSE' ? 'Gastos' : 'Ingresos'})</span>
                     </label>
                     <button
                       type="button"
                       onClick={() => setIsAddingCategory(!isAddingCategory)}
-                      className="text-[11px] text-emerald-400 hover:underline flex items-center space-x-0.5"
+                      className="text-[11px] text-emerald-500 dark:text-emerald-400 hover:underline flex items-center space-x-0.5"
                     >
                       <Plus className="w-3 h-3" />
                       <span>Nueva</span>
@@ -317,13 +317,13 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                   </div>
 
                   {isAddingCategory ? (
-                    <div className="space-y-2 p-2 bg-white/5 border border-emerald-500/30 rounded-xl">
+                    <div className="space-y-2 p-2 bg-slate-100 dark:bg-white/5 border border-emerald-500/30 rounded-xl">
                       <input
                         type="text"
                         placeholder="Nombre de categoría..."
                         value={newCatName}
                         onChange={(e) => setNewCatName(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-lg h-9 px-3 text-xs text-white placeholder:text-white/30 focus:outline-none"
+                        className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-lg h-9 px-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none"
                       />
                       <div className="flex space-x-2">
                         <button
@@ -336,7 +336,7 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                         <button
                           type="button"
                           onClick={() => setIsAddingCategory(false)}
-                          className="px-2 bg-white/10 text-white text-[11px] h-7 rounded-md"
+                          className="px-2 bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white text-[11px] h-7 rounded-md"
                         >
                           Cancelar
                         </button>
@@ -346,7 +346,7 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                     <select
                       value={categoryId}
                       onChange={(e) => setCategoryId(e.target.value)}
-                      className="w-full bg-[#121824] border border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                      className="w-full bg-slate-50 dark:bg-[#121824] border border-slate-200 dark:border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
                     >
                       {availableCategories.map(cat => (
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
@@ -358,14 +358,14 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                 {/* Account / Card Selector */}
                 <div className="space-y-1.5">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-medium text-white/60 flex items-center space-x-1">
-                      <CreditCard className="w-3.5 h-3.5 text-emerald-400" />
+                    <label className="text-xs font-medium text-slate-600 dark:text-white/60 flex items-center space-x-1">
+                      <CreditCard className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                       <span>Cuenta / Tarjeta</span>
                     </label>
                     <button
                       type="button"
                       onClick={() => setIsAddingAccount(!isAddingAccount)}
-                      className="text-[11px] text-emerald-400 hover:underline flex items-center space-x-0.5"
+                      className="text-[11px] text-emerald-500 dark:text-emerald-400 hover:underline flex items-center space-x-0.5"
                     >
                       <Plus className="w-3 h-3" />
                       <span>Nueva</span>
@@ -373,20 +373,20 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                   </div>
 
                   {isAddingAccount ? (
-                    <div className="space-y-2 p-2 bg-white/5 border border-emerald-500/30 rounded-xl">
+                    <div className="space-y-2 p-2 bg-slate-100 dark:bg-white/5 border border-emerald-500/30 rounded-xl">
                       <input
                         type="text"
                         placeholder="ej. Yappy, Tarjeta Clave"
                         value={newAccName}
                         onChange={(e) => setNewAccName(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-lg h-9 px-3 text-xs text-white placeholder:text-white/30 focus:outline-none"
+                        className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-lg h-9 px-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none"
                       />
                       <input
                         type="number"
                         placeholder="Saldo inicial ($)..."
                         value={newAccBalance}
                         onChange={(e) => setNewAccBalance(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-lg h-9 px-3 text-xs text-white placeholder:text-white/30 focus:outline-none"
+                        className="w-full bg-white dark:bg-black/40 border border-slate-200 dark:border-white/10 rounded-lg h-9 px-3 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-white/30 focus:outline-none"
                       />
                       <div className="flex space-x-2">
                         <button
@@ -399,7 +399,7 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                         <button
                           type="button"
                           onClick={() => setIsAddingAccount(false)}
-                          className="px-2 bg-white/10 text-white text-[11px] h-7 rounded-md"
+                          className="px-2 bg-slate-200 dark:bg-white/10 text-slate-800 dark:text-white text-[11px] h-7 rounded-md"
                         >
                           Cancelar
                         </button>
@@ -409,7 +409,7 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                     <select
                       value={accountId}
                       onChange={(e) => setAccountId(e.target.value)}
-                      className="w-full bg-[#121824] border border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-3 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                      className="w-full bg-slate-50 dark:bg-[#121824] border border-slate-200 dark:border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
                     >
                       {displayAccounts.map(acc => (
                         <option key={acc.id} value={acc.id}>{acc.name} ({acc.balance})</option>
@@ -422,21 +422,21 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
 
               {/* Date Input */}
               <div className="space-y-1.5">
-                <label className="text-xs font-medium text-white/60 flex items-center space-x-1">
-                  <Calendar className="w-3.5 h-3.5 text-emerald-400" />
+                <label className="text-xs font-medium text-slate-600 dark:text-white/60 flex items-center space-x-1">
+                  <Calendar className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
                   <span>Fecha de Transacción</span>
                 </label>
                 <input
                   type="date"
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
-                  className="w-full bg-[#121824] border border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-4 text-xs text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
+                  className="w-full bg-slate-50 dark:bg-[#121824] border border-slate-200 dark:border-white/10 focus:border-emerald-500/50 rounded-xl h-11 px-4 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-all"
                 />
               </div>
 
               {/* Error Alert */}
               {errorMessage && (
-                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs animate-shake">
+                <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-300 text-xs animate-shake">
                   {errorMessage}
                 </div>
               )}
@@ -446,7 +446,7 @@ export default function TransactionModal({ isOpen, onClose }: TransactionModalPr
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 h-12 bg-white/5 hover:bg-white/10 text-white/70 text-xs font-semibold rounded-xl transition-all"
+                  className="flex-1 h-12 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 text-slate-700 dark:text-white/70 text-xs font-semibold rounded-xl transition-all"
                 >
                   Cancelar
                 </button>

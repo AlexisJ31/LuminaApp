@@ -35,25 +35,25 @@ export default function NetWorthCard({
   const creditSum = accounts.filter(a => a.type === 'credit').reduce((acc, a) => acc + a.balance, 0);
 
   return (
-    <div className="w-full bg-[#121824] border border-white/5 rounded-3xl p-5 sm:p-6 backdrop-blur-xl space-y-4 shadow-2xl relative overflow-hidden select-none">
+    <div className="w-full bg-white dark:bg-[#121824] border border-slate-200 dark:border-white/5 rounded-3xl p-5 sm:p-6 backdrop-blur-xl space-y-4 shadow-2xl relative overflow-hidden select-none transition-colors duration-300">
       
       {/* Card Header & Period Selector */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
-          <div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+          <div className="p-2 rounded-xl bg-blue-500/10 text-blue-500 dark:text-blue-400 border border-blue-500/20">
             <Wallet className="w-4 h-4" />
           </div>
-          <span className="text-xs font-semibold text-white/70">Patrimonio Neto Total</span>
+          <span className="text-xs font-semibold text-slate-700 dark:text-white/70">Patrimonio Neto Total</span>
         </div>
 
         {/* Period Pills */}
-        <div className="flex items-center space-x-1 bg-white/5 p-1 rounded-xl border border-white/5">
+        <div className="flex items-center space-x-1 bg-slate-100 dark:bg-white/5 p-1 rounded-xl border border-slate-200 dark:border-white/5">
           {periods.map((p) => (
             <button
               key={p}
               onClick={() => setSelectedPeriod(p)}
               className={`px-2 py-0.5 rounded-lg text-[10px] font-bold transition-colors ${
-                selectedPeriod === p ? 'bg-white text-black' : 'text-white/40 hover:text-white'
+                selectedPeriod === p ? 'bg-slate-900 dark:bg-white text-white dark:text-black' : 'text-slate-500 dark:text-white/40 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               {p}
@@ -66,10 +66,10 @@ export default function NetWorthCard({
       <div className="space-y-1">
         <div className="flex items-baseline justify-between">
           <div className="flex items-baseline space-x-3">
-            <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white font-mono">
+            <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white font-mono">
               {formatMoney(displayCents)}
             </span>
-            <div className="flex items-center space-x-1 text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+            <div className="flex items-center space-x-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
               <TrendingUp className="w-3 h-3" />
               <span>+{currentGrowth}%</span>
             </div>
@@ -77,24 +77,24 @@ export default function NetWorthCard({
 
           <button
             onClick={() => setShowBreakdown(!showBreakdown)}
-            className="text-[11px] font-semibold text-blue-400 hover:text-blue-300 underline"
+            className="text-[11px] font-semibold text-blue-500 dark:text-blue-400 hover:underline"
           >
             {showBreakdown ? 'Ocultar' : 'Ver Desglose'}
           </button>
         </div>
-        <p className="text-xs text-white/40">Consolidado de cuentas bancarias y liquidez en efectivo</p>
+        <p className="text-xs text-slate-500 dark:text-white/40">Consolidado de cuentas bancarias y liquidez en efectivo</p>
       </div>
 
       {/* Account Breakdown Collapsible */}
       {showBreakdown && (
-        <div className="pt-3 border-t border-white/10 grid grid-cols-2 gap-3 animate-in fade-in duration-200">
-          <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 space-y-0.5">
-            <span className="text-[10px] text-white/40 font-medium">Liquidez en Efectivo</span>
-            <p className="text-sm font-bold text-emerald-400 font-mono">${liquidSum.toFixed(2)}</p>
+        <div className="pt-3 border-t border-slate-200 dark:border-white/10 grid grid-cols-2 gap-3 animate-in fade-in duration-200">
+          <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 space-y-0.5">
+            <span className="text-[10px] text-slate-500 dark:text-white/40 font-medium">Liquidez en Efectivo</span>
+            <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono">${liquidSum.toFixed(2)}</p>
           </div>
-          <div className="p-2.5 rounded-xl bg-white/5 border border-white/5 space-y-0.5">
-            <span className="text-[10px] text-white/40 font-medium">Deuda en Tarjetas</span>
-            <p className="text-sm font-bold text-amber-400 font-mono">${creditSum.toFixed(2)}</p>
+          <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 space-y-0.5">
+            <span className="text-[10px] text-slate-500 dark:text-white/40 font-medium">Deuda en Tarjetas</span>
+            <p className="text-sm font-bold text-amber-600 dark:text-amber-400 font-mono">${creditSum.toFixed(2)}</p>
           </div>
         </div>
       )}

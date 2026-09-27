@@ -92,15 +92,15 @@ export default function NotificationsPopover({ isOpen, onClose }: NotificationsP
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -10, scale: 0.95 }}
         transition={{ duration: 0.15, ease: 'easeOut' }}
-        className="absolute right-0 top-12 z-50 w-80 sm:w-96 rounded-2xl border border-white/10 dark:border-white/10 bg-slate-900/95 dark:bg-[#0E131F]/95 backdrop-blur-xl shadow-2xl overflow-hidden text-slate-100"
+        className="absolute right-0 top-12 z-50 w-80 sm:w-96 rounded-2xl border border-slate-200 dark:border-white/10 bg-white/95 dark:bg-[#0E131F]/95 backdrop-blur-xl shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100 transition-colors duration-300"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-white/5">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5">
           <div className="flex items-center space-x-2">
-            <Bell className="w-4 h-4 text-emerald-400" />
-            <span className="font-semibold text-sm tracking-tight">Notificaciones</span>
+            <Bell className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
+            <span className="font-semibold text-sm tracking-tight text-slate-900 dark:text-white">Notificaciones</span>
             {unreadCount > 0 && (
-              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
                 {unreadCount} nuevas
               </span>
             )}
@@ -110,7 +110,7 @@ export default function NotificationsPopover({ isOpen, onClose }: NotificationsP
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-[11px] font-medium text-emerald-400 hover:text-emerald-300 transition-colors flex items-center space-x-1"
+                className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 hover:underline transition-colors flex items-center space-x-1"
                 title="Marcar todas como leídas"
               >
                 <Check className="w-3 h-3" />
@@ -119,7 +119,7 @@ export default function NotificationsPopover({ isOpen, onClose }: NotificationsP
             )}
             <button
               onClick={onClose}
-              className="p-1 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+              className="p-1 rounded-lg hover:bg-slate-200 dark:hover:bg-white/10 text-slate-400 dark:text-white/50 hover:text-slate-900 dark:hover:text-white transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -127,10 +127,10 @@ export default function NotificationsPopover({ isOpen, onClose }: NotificationsP
         </div>
 
         {/* List */}
-        <div className="max-h-80 overflow-y-auto divide-y divide-white/5">
+        <div className="max-h-80 overflow-y-auto divide-y divide-slate-100 dark:divide-white/5">
           {notifications.length === 0 ? (
-            <div className="py-8 text-center text-white/40 space-y-2">
-              <Sparkles className="w-8 h-8 mx-auto text-white/20 animate-pulse" />
+            <div className="py-8 text-center text-slate-400 dark:text-white/40 space-y-2">
+              <Sparkles className="w-8 h-8 mx-auto text-slate-300 dark:text-white/20 animate-pulse" />
               <p className="text-xs">No tienes notificaciones pendientes</p>
             </div>
           ) : (

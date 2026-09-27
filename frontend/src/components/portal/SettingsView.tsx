@@ -170,20 +170,20 @@ export default function SettingsView() {
               Utiliza esta clave <code className="text-purple-400 font-mono">x-api-key</code> en el encabezado HTTP de tu flujo de n8n o Make para inyectar transacciones automáticamente desde WhatsApp.
             </p>
 
-            <div className="p-4 rounded-xl bg-slate-900 border border-white/10 space-y-2">
-              <span className="text-[10px] text-white/40 uppercase tracking-widest font-mono">Clave de Ingesta Secreta</span>
+            <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-2">
+              <span className="text-[10px] text-slate-500 dark:text-white/40 uppercase tracking-widest font-mono">Clave de Ingesta Secreta</span>
               <div className="flex items-center justify-between gap-2">
                 <input
                   type="text"
                   readOnly
                   value={webhookKey}
-                  className="w-full bg-transparent text-purple-300 font-mono text-xs focus:outline-none select-all"
+                  className="w-full bg-transparent text-purple-700 dark:text-purple-300 font-mono text-xs focus:outline-none select-all font-semibold"
                 />
                 <button
                   onClick={handleCopyKey}
-                  className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center space-x-1.5 shrink-0 transition-colors"
+                  className="px-3 py-1.5 rounded-lg bg-slate-200 dark:bg-white/10 hover:bg-slate-300 dark:hover:bg-white/20 text-slate-900 dark:text-white text-xs font-semibold flex items-center space-x-1.5 shrink-0 transition-colors"
                 >
-                  {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                   <span>{isCopied ? 'Copiado' : 'Copiar'}</span>
                 </button>
               </div>

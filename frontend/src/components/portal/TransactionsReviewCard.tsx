@@ -41,26 +41,26 @@ export default function TransactionsReviewCard({ onAllReviewed }: TransactionsRe
   };
 
   return (
-    <div className="w-full bg-[#121824] border border-white/5 rounded-3xl p-5 sm:p-6 backdrop-blur-xl space-y-5 shadow-2xl">
+    <div className="w-full bg-white dark:bg-[#121824] border border-slate-200 dark:border-white/5 rounded-3xl p-5 sm:p-6 backdrop-blur-xl space-y-5 shadow-2xl transition-colors duration-300">
       
       {/* Card Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <div className="p-2.5 rounded-2xl bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border border-emerald-500/20">
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-semibold text-white tracking-tight">Gastos por Revisar</h3>
-            <p className="text-xs text-white/40">Inyectados automáticamente por n8n & webhooks</p>
+            <h3 className="text-base font-semibold text-slate-900 dark:text-white tracking-tight">Gastos por Revisar</h3>
+            <p className="text-xs text-slate-500 dark:text-white/40">Inyectados automáticamente por n8n & webhooks</p>
           </div>
         </div>
 
         {items.length > 0 && (
           <button
             onClick={handleConfirmAll}
-            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/10 transition-all active:scale-95"
+            className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/10 hover:bg-slate-200 dark:hover:bg-white/20 text-slate-800 dark:text-white text-xs font-medium border border-slate-200 dark:border-white/10 transition-all active:scale-95"
           >
-            <CheckCheck className="w-4 h-4 text-emerald-400" />
+            <CheckCheck className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
             <span>Aprobar todos ({items.length})</span>
           </button>
         )}
@@ -73,13 +73,13 @@ export default function TransactionsReviewCard({ onAllReviewed }: TransactionsRe
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="py-10 text-center space-y-3 bg-white/[0.02] border border-dashed border-white/10 rounded-2xl"
+              className="py-10 text-center space-y-3 bg-slate-50 dark:bg-white/[0.02] border border-dashed border-slate-200 dark:border-white/10 rounded-2xl"
             >
-              <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 flex items-center justify-center mx-auto">
                 <Check className="w-6 h-6 stroke-[3]" />
               </div>
-              <h4 className="text-sm font-semibold text-white">¡Todo al día!</h4>
-              <p className="text-xs text-white/40 max-w-xs mx-auto">
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-white">¡Todo al día!</h4>
+              <p className="text-xs text-slate-500 dark:text-white/40 max-w-xs mx-auto">
                 No hay transacciones pendientes en tu bandeja de entrada. Has confirmado {confirmedCount} gastos.
               </p>
             </motion.div>
@@ -91,13 +91,13 @@ export default function TransactionsReviewCard({ onAllReviewed }: TransactionsRe
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, x: -50, height: 0 }}
                 transition={{ duration: 0.25 }}
-                className="group flex items-center justify-between p-3.5 rounded-2xl bg-white/[0.03] hover:bg-white/[0.06] border border-white/5 transition-all"
+                className="group flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-white/[0.03] hover:bg-slate-100 dark:hover:bg-white/[0.06] border border-slate-200 dark:border-white/5 transition-all"
               >
                 {/* Description & Badge */}
                 <div className="flex items-center space-x-3 truncate mr-2">
                   <button 
                     onClick={() => handleConfirmSingle(item.id)}
-                    className="w-7 h-7 rounded-xl bg-white/5 group-hover:bg-emerald-500/20 text-white/40 group-hover:text-emerald-400 border border-white/10 flex items-center justify-center transition-all shrink-0 active:scale-90"
+                    className="w-7 h-7 rounded-xl bg-slate-200/60 dark:bg-white/5 group-hover:bg-emerald-500/20 text-slate-400 dark:text-white/40 group-hover:text-emerald-500 border border-slate-300 dark:border-white/10 flex items-center justify-center transition-all shrink-0 active:scale-90"
                     title="Aprobar gasto"
                   >
                     <Check className="w-4 h-4" />
@@ -105,28 +105,28 @@ export default function TransactionsReviewCard({ onAllReviewed }: TransactionsRe
 
                   <div className="truncate">
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs font-semibold text-white truncate">{item.description}</span>
+                      <span className="text-xs font-semibold text-slate-900 dark:text-white truncate">{item.description}</span>
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider ${item.categoryBadgeColor}`}>
                         {item.category}
                       </span>
                     </div>
                     {item.sourceNotes ? (
-                      <p className="text-[11px] text-white/40 truncate">{item.sourceNotes}</p>
+                      <p className="text-[11px] text-slate-500 dark:text-white/40 truncate">{item.sourceNotes}</p>
                     ) : (
-                      <p className="text-[11px] text-white/30">{item.dateLabel}</p>
+                      <p className="text-[11px] text-slate-400 dark:text-white/30">{item.dateLabel}</p>
                     )}
                   </div>
                 </div>
 
                 {/* Amount & Quick Confirm/Reject */}
                 <div className="flex items-center space-x-2 shrink-0">
-                  <span className="font-mono text-xs font-bold text-white mr-1">
+                  <span className="font-mono text-xs font-bold text-slate-900 dark:text-white mr-1">
                     {formatMoney(item.amountInCents)}
                   </span>
                   
                   <button
                     onClick={() => rejectUnreviewedSingle(item.id)}
-                    className="flex items-center space-x-1 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all active:scale-95"
+                    className="flex items-center space-x-1 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all active:scale-95"
                     title="Descartar gasto"
                   >
                     <span>Descartar</span>
@@ -134,7 +134,7 @@ export default function TransactionsReviewCard({ onAllReviewed }: TransactionsRe
 
                   <button
                     onClick={() => handleConfirmSingle(item.id)}
-                    className="flex items-center space-x-1 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all active:scale-95"
+                    className="flex items-center space-x-1 text-[11px] font-medium px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-all active:scale-95"
                   >
                     <span>Confirmar</span>
                   </button>
