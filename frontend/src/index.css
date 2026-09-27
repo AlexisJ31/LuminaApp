@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
+@variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -10,6 +10,6 @@
 
 @layer base {
   body {
-    @apply font-sans bg-black text-white antialiased;
+    @apply font-sans bg-slate-50 text-slate-900 dark:bg-[#080A0F] dark:text-white antialiased;
   }
 }
