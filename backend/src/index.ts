@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import transactionRoutes from './routes/transaction.routes';
+import authRoutes from './routes/auth.routes';
 
 dotenv.config();
 
@@ -40,6 +41,7 @@ app.get('/health', (req, res) => {
 });
 
 // Rutas de la API v1
+app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1', transactionRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
