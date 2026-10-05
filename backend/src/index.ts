@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import transactionRoutes from './routes/transaction.routes';
 import authRoutes from './routes/auth.routes';
 import webhookRoutes from './routes/webhook.routes';
+import reviewRoutes from './routes/review.routes';
+import connectionRoutes from './routes/connection.routes';
 
 dotenv.config();
 
@@ -44,6 +46,8 @@ app.get('/health', (req, res) => {
 // Rutas de la API v1
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/webhooks', webhookRoutes);
+app.use('/api/v1/review-inbox', reviewRoutes);
+app.use('/api/v1/connections', connectionRoutes);
 app.use('/api/v1', transactionRoutes);
 
 

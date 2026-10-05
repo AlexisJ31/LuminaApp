@@ -135,10 +135,10 @@ Este documento define la trayectoria técnica y de producto para la plataforma L
 
 | Clave | Titulo | Prioridad | Dependencias | Estado |
 |---|---|---|---|---|
-| ING-01 | Modelo de datos relacional para ingesta (RawEvent, SourceConnection, ReviewItem, MerchantAlias) | P0 | Ninguna | En progreso |
-| ING-02 | Webhook Ingest Gateway con validacion HMAC, API Key e idempotencia estricta | P0 | ING-01 | Pendiente |
-| ING-03 | Motor de deduplicacion multi-nivel (hash canonico + ventana temporal) | P0 | ING-01, ING-02 | Pendiente |
-| ING-04 | Servicio de normalizacion de comercios y categorizacion heuristica para Panama | P1 | ING-01 | Pendiente |
-| ING-05 | API y controladores de la bandeja de revision (Inbox UNREVIEWED / REVIEWED / REJECTED) | P0 | ING-01 | Pendiente |
+| ING-01 | Modelo de datos relacional para ingesta (RawEvent, SourceConnection, ReviewItem, MerchantAlias) | P0 | Ninguna | Completado |
+| ING-02 | Webhook Ingest Gateway con validacion HMAC, API Key e idempotencia estricta | P0 | ING-01 | Completado |
+| ING-03 | Motor de deduplicacion multi-nivel (hash canonico + ventana temporal) | P0 | ING-01, ING-02 | Completado |
+| ING-04 | Servicio de normalizacion de comercios y categorizacion heuristica para Panama | P1 | ING-01 | Completado |
+| ING-05 | API y controladores de la bandeja de revision (Inbox UNREVIEWED / REVIEWED / REJECTED) | P0 | ING-01 | Completado |
 | ING-06 | Extractores y parsers de estados de cuenta PDF/CSV (Banco General, Banistmo, BAC) | P1 | ING-01, ING-04 | Pendiente |
 | ING-07 | Conector Open Banking (Prometeo API / agregador bancario autorizado) | P2 | ING-01, ING-03 | Pendiente |
