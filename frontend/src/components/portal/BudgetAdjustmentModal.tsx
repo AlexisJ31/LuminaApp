@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Target, AlertTriangle, Check, X, Calendar, Repeat, ArrowRight, ShieldAlert } from 'lucide-react';
+import { Target, AlertTriangle, Check, X, Calendar, Repeat } from 'lucide-react';
 import { useFinance } from '../../context/FinanceContext';
 
 interface BudgetAdjustmentModalProps {

@@ -49,7 +49,7 @@ app.use('/api/v1', transactionRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
-    console.log(`🚀 LuminaApp Backend API corriendo en el puerto ${PORT}`);
+    console.log(`[LuminaApp] Backend API corriendo en el puerto ${PORT}`);
   });
 }
 

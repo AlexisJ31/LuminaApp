@@ -1,5 +1,5 @@
 // Schema de Prisma para LuminaApp (Finanzas Personales)
-// Cumple estrictamente con "Arquitectura_LuminaApp.docx"
+// Cumple con el Plan Maestro de Ingesta, Arquitectura y Reglas de Oro de Ingenieria
 
 generator client {
   provider = "prisma-client-js"
@@ -36,13 +36,52 @@ enum TransactionStatus {
 enum TransactionSource {
   MANUAL
   WEBHOOK_N8N
+  YAPPY_PUSH
+  WHATSAPP_BOT
+  EMAIL_PARSER
   IMPORT
+  OPEN_BANKING
 }
 
 enum BudgetPeriod {
   MONTHLY
   WEEKLY
   YEARLY
+}
+
+enum ConnectionType {
+  WEBHOOK
+  OPEN_BANKING
+  EMAIL_PARSER
+  MANUAL_IMPORT
+}
+
+enum ConnectionStatus {
+  ACTIVE
+  PAUSED
+  REVOKED
+}
+
+enum RawEventStatus {
+  PENDING
+  PROCESSED
+  DUPLICATE
+  FAILED
+}
+
+enum ReviewReason {
+  LOW_CONFIDENCE
+  POSSIBLE_DUPLICATE
+  NEW_MERCHANT
+  MANUAL_FLAG
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  STATUS_CHANGE
+  MERGE
 }
 
 // ------------------------------------------------------
@@ -59,10 +98,15 @@ model User {
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 
-  accounts     Account[]
-  categories   Category[]
-  transactions Transaction[]
-  budgets      Budget[]
+  accounts          Account[]
+  categories        Category[]
+  transactions      Transaction[]
+  budgets           Budget[]
+  sourceConnections SourceConnection[]
+  rawEvents         RawEvent[]
+  reviewItems       ReviewItem[]
+  merchantAliases   MerchantAlias[]
+  auditLogs         AuditLog[]
 
   @@map("users")
 }
@@ -74,7 +118,7 @@ model Account {
   name           String
   type           AccountType @default(DEBIT)
   
-  // REGULA: "El Dogma de la Moneda" (Almacenamiento en centavos de entero)
+  // Regla de Oro: El Dogma de la Moneda (enteros en centavos)
   balanceInCents Int         @default(0)
   
   color          String?
@@ -84,12 +128,13 @@ model Account {
 
   transactions   Transaction[]
 
+  @@index([userId])
   @@map("accounts")
 }
 
 model Category {
   id           String          @id @default(uuid())
-  userId       String?         // Nullable para categorías globales por defecto
+  userId       String?         // Nullable para categorias globales por defecto
   user         User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
   name         String
   icon         String          @default("tag")
@@ -98,39 +143,132 @@ model Category {
   createdAt    DateTime        @default(now())
   updatedAt    DateTime        @updatedAt
 
-  transactions Transaction[]
-  budgets      Budget[]
+  transactions    Transaction[]
+  budgets         Budget[]
+  merchantAliases MerchantAlias[]
 
+  @@index([userId])
   @@map("categories")
 }
 
-model Transaction {
+model SourceConnection {
+  id              String           @id @default(uuid())
+  userId          String
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  type            ConnectionType   @default(WEBHOOK)
+  status          ConnectionStatus @default(ACTIVE)
+  apiKeyHash      String?          @unique
+  encryptedSecret String?
+  lastSyncAt      DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  rawEvents  RawEvent[]
+  syncCursor SyncCursor?
+
+  @@index([userId])
+  @@map("source_connections")
+}
+
+model RawEvent {
   id             String            @id @default(uuid())
   userId         String
   user           User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accountId      String
-  account        Account           @relation(fields: [accountId], references: [id], onDelete: Cascade)
-  categoryId     String
-  category       Category          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  
-  // REGULA: "El Dogma de la Moneda" (Todos los montos son enteros positivos en centavos)
-  amountInCents  Int
-  
-  type           TransactionType   @default(EXPENSE)
-  
-  // REGULA: Auditoría Status & Source
-  status         TransactionStatus @default(UNREVIEWED)
-  source         TransactionSource @default(MANUAL)
-  
-  description    String
-  notes          String?
-  date           DateTime          @default(now())
+  connectionId   String?
+  connection     SourceConnection? @relation(fields: [connectionId], references: [id], onDelete: SetNull)
+  source         TransactionSource @default(WEBHOOK_N8N)
+  idempotencyKey String?           @unique
+  payloadHash    String
+  payloadJson    String            // Serialized JSON del evento crudo
+  status         RawEventStatus    @default(PENDING)
+  errorMessage   String?
+  processedAt    DateTime?
   createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
+
+  transactions Transaction[]
+
+  @@index([userId, createdAt])
+  @@index([payloadHash])
+  @@map("raw_events")
+}
+
+model Transaction {
+  id              String            @id @default(uuid())
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId       String
+  account         Account           @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  categoryId      String
+  category        Category          @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  rawEventId      String?
+  rawEvent        RawEvent?         @relation(fields: [rawEventId], references: [id], onDelete: SetNull)
+  
+  // Regla de Oro: El Dogma de la Moneda (enteros en centavos)
+  amountInCents   Int
+  
+  type            TransactionType   @default(EXPENSE)
+  status          TransactionStatus @default(UNREVIEWED)
+  source          TransactionSource @default(MANUAL)
+  
+  description     String
+  merchantName    String?
+  confidenceScore Float             @default(1.0)
+  notes           String?
+  date            DateTime          @default(now())
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  reviewItem ReviewItem?
 
   @@index([userId, date])
   @@index([status])
+  @@index([userId, amountInCents, date])
   @@map("transactions")
+}
+
+model ReviewItem {
+  id                  String       @id @default(uuid())
+  userId              String
+  user                User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactionId       String       @unique
+  transaction         Transaction  @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  confidenceScore     Float
+  suggestedCategoryId String?
+  reason              ReviewReason @default(LOW_CONFIDENCE)
+  resolvedAt          DateTime?
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  @@index([userId, resolvedAt])
+  @@map("review_items")
+}
+
+model MerchantAlias {
+  id                String    @id @default(uuid())
+  userId            String?   // Nullable para catalogo general de Panama
+  user              User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rawPattern        String
+  normalizedName    String
+  defaultCategoryId String?
+  defaultCategory   Category? @relation(fields: [defaultCategoryId], references: [id], onDelete: SetNull)
+  confidence        Float     @default(1.0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([userId, rawPattern])
+  @@map("merchant_aliases")
+}
+
+model SyncCursor {
+  id           String           @id @default(uuid())
+  connectionId String           @unique
+  connection   SourceConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  cursorValue  String
+  lastSyncAt   DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@map("sync_cursors")
 }
 
 model Budget {
@@ -140,7 +278,7 @@ model Budget {
   categoryId   String
   category     Category     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   
-  // REGULA: "El Dogma de la Moneda" (Límite almacenado en centavos de entero)
+  // Regla de Oro: El Dogma de la Moneda
   limitInCents Int
   
   period       BudgetPeriod @default(MONTHLY)
@@ -149,4 +287,18 @@ model Budget {
 
   @@unique([userId, categoryId, period])
   @@map("budgets")
+}
+
+model AuditLog {
+  id         String      @id @default(uuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entityType String
+  entityId   String
+  action     AuditAction
+  metadata   String?     // Serialized JSON
+  createdAt  DateTime    @default(now())
+
+  @@index([userId, createdAt])
+  @@map("audit_logs")
 }
