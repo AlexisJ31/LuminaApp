@@ -140,5 +140,5 @@ Este documento define la trayectoria técnica y de producto para la plataforma L
 | ING-03 | Motor de deduplicacion multi-nivel (hash canonico + ventana temporal) | P0 | ING-01, ING-02 | Completado |
 | ING-04 | Servicio de normalizacion de comercios y categorizacion heuristica para Panama | P1 | ING-01 | Completado |
 | ING-05 | API y controladores de la bandeja de revision (Inbox UNREVIEWED / REVIEWED / REJECTED) | P0 | ING-01 | Completado |
-| ING-06 | Extractores y parsers de estados de cuenta PDF/CSV (Banco General, Banistmo, BAC) | P1 | ING-01, ING-04 | Pendiente |
+| ING-06 | Extractores y parsers de estados de cuenta PDF/CSV (Banco General, Banistmo, BAC) | P1 | ING-01, ING-04 | Completado |
 | ING-07 | Conector Open Banking (Prometeo API / agregador bancario autorizado) | P2 | ING-01, ING-03 | Pendiente |
