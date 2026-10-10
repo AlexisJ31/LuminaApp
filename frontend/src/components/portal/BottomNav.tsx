@@ -14,30 +14,30 @@ export default function BottomNav({
   unreviewedCount = 3 
 }: BottomNavProps) {
   return (
-    <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/95 dark:bg-[#080A0F]/95 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 z-50 flex items-center justify-around px-2 select-none shadow-2xl transition-colors duration-300">
+    <div className="lg:hidden fixed bottom-0 left-0 right-0 h-14 bg-white/95 dark:bg-[#090A0F]/95 backdrop-blur-md border-t border-zinc-200 dark:border-white/[0.08] z-50 flex items-center justify-around px-2 select-none transition-colors duration-200">
       
       {/* 1. Tab Dashboard */}
       <button 
         onClick={() => onTabChange('dashboard')}
-        className={`flex flex-col items-center justify-center w-14 py-1 transition-colors ${
-          currentTab === 'dashboard' ? 'text-slate-900 dark:text-white font-semibold' : 'text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
+        className={`flex flex-col items-center justify-center w-12 py-1 transition-colors ${
+          currentTab === 'dashboard' ? 'text-zinc-900 dark:text-zinc-100 font-semibold' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
         }`}
       >
-        <LayoutDashboard className="w-5 h-5 mb-0.5" />
+        <LayoutDashboard className="w-4 h-4 mb-0.5" />
         <span className="text-[10px]">Inicio</span>
       </button>
 
-      {/* 2. Tab Inbox / Por Revisar */}
+      {/* 2. Tab Inbox */}
       <button 
         onClick={() => onTabChange('review')}
-        className={`flex flex-col items-center justify-center w-14 py-1 relative transition-colors ${
-          currentTab === 'review' ? 'text-slate-900 dark:text-white font-semibold' : 'text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
+        className={`flex flex-col items-center justify-center w-12 py-1 relative transition-colors ${
+          currentTab === 'review' ? 'text-zinc-900 dark:text-zinc-100 font-semibold' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
         }`}
       >
         <div className="relative">
-          <Receipt className="w-5 h-5 mb-0.5" />
+          <Receipt className="w-4 h-4 mb-0.5" />
           {unreviewedCount > 0 && (
-            <span className="absolute -top-1 -right-2 bg-emerald-500 text-black text-[9px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center shadow-lg shadow-emerald-500/50">
+            <span className="absolute -top-1 -right-2 bg-emerald-500 text-zinc-950 text-[9px] font-mono font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center">
               {unreviewedCount}
             </span>
           )}
@@ -45,39 +45,40 @@ export default function BottomNav({
         <span className="text-[10px]">Inbox</span>
       </button>
 
-      {/* 3. FAB (Floating Action Button) Masivo Central */}
-      <div className="relative -top-5 flex items-center justify-center">
+      {/* 3. Action Button Central */}
+      <div className="relative -top-3 flex items-center justify-center">
         <button
           onClick={onOpenNewTransaction}
-          className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-500 via-teal-400 to-cyan-400 text-black flex items-center justify-center shadow-lg shadow-emerald-500/30 hover:scale-105 active:scale-95 transition-all duration-200 ring-4 ring-slate-50 dark:ring-[#080A0F]"
-          aria-label="Registrar Gasto Rápido"
+          className="w-10 h-10 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 flex items-center justify-center shadow-md active:scale-95 transition-all ring-2 ring-zinc-50 dark:ring-[#090A0F]"
+          aria-label="Nuevo Movimiento"
         >
-          <Plus className="w-7 h-7 stroke-[2.5]" />
+          <Plus className="w-5 h-5 stroke-[2.5]" />
         </button>
       </div>
 
       {/* 4. Tab Presupuestos */}
       <button 
         onClick={() => onTabChange('budgets')}
-        className={`flex flex-col items-center justify-center w-14 py-1 transition-colors ${
-          currentTab === 'budgets' ? 'text-slate-900 dark:text-white font-semibold' : 'text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
+        className={`flex flex-col items-center justify-center w-12 py-1 transition-colors ${
+          currentTab === 'budgets' ? 'text-zinc-900 dark:text-zinc-100 font-semibold' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
         }`}
       >
-        <PieChart className="w-5 h-5 mb-0.5" />
+        <PieChart className="w-4 h-4 mb-0.5" />
         <span className="text-[10px]">Límites</span>
       </button>
 
-      {/* 5. Tab Perfil / Ajustes */}
+      {/* 5. Tab Perfil */}
       <button 
         onClick={() => onTabChange('settings')}
-        className={`flex flex-col items-center justify-center w-14 py-1 transition-colors ${
-          currentTab === 'settings' ? 'text-slate-900 dark:text-white font-semibold' : 'text-slate-400 dark:text-white/40 hover:text-slate-700 dark:hover:text-white/70'
+        className={`flex flex-col items-center justify-center w-12 py-1 transition-colors ${
+          currentTab === 'settings' ? 'text-zinc-900 dark:text-zinc-100 font-semibold' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300'
         }`}
       >
-        <User className="w-5 h-5 mb-0.5" />
+        <User className="w-4 h-4 mb-0.5" />
         <span className="text-[10px]">Perfil</span>
       </button>
 
     </div>
   );
 }
+

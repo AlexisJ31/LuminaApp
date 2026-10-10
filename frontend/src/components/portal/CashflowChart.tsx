@@ -47,7 +47,7 @@ export default function CashflowChart({ data }: CashflowChartProps) {
       const expectedPacing = Math.round((budgetLimit / totalDaysInMonth) * d);
 
       return {
-        day: d === currentDay ? `Día ${d} (Hoy)` : `Día ${d}`,
+        day: d === currentDay ? `D${d} (Hoy)` : `D${d}`,
         dayNum: d,
         spent: isFuture ? (null as unknown as number) : Math.round(sum),
         expected: expectedPacing
@@ -63,24 +63,24 @@ export default function CashflowChart({ data }: CashflowChartProps) {
         <AreaChart data={chartPoints} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <defs>
             <linearGradient id="emeraldGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10B981" stopOpacity={0.4} />
+              <stop offset="5%" stopColor="#10B981" stopOpacity={0.25} />
               <stop offset="95%" stopColor="#10B981" stopOpacity={0.0} />
             </linearGradient>
             <linearGradient id="expectedGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.15} />
-              <stop offset="95%" stopColor="#3B82F6" stopOpacity={0.0} />
+              <stop offset="5%" stopColor="#71717A" stopOpacity={0.12} />
+              <stop offset="95%" stopColor="#71717A" stopOpacity={0.0} />
             </linearGradient>
           </defs>
           <XAxis 
             dataKey="day" 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#64748b', fontSize: 10 }} 
+            tick={{ fill: '#71717a', fontSize: 10, fontFamily: 'monospace' }} 
           />
           <YAxis 
             axisLine={false} 
             tickLine={false} 
-            tick={{ fill: '#64748b', fontSize: 10 }}
+            tick={{ fill: '#71717a', fontSize: 10, fontFamily: 'monospace' }}
             tickFormatter={(value) => `$${value}`}
           />
           <Tooltip 
@@ -89,14 +89,18 @@ export default function CashflowChart({ data }: CashflowChartProps) {
                 const item = payload[0].payload as any;
                 const hasSpent = item.spent !== null && item.spent !== undefined;
                 return (
-                  <div className="bg-white/95 dark:bg-[#080A0F]/90 backdrop-blur-md border border-slate-200 dark:border-white/10 p-2.5 rounded-xl text-xs space-y-1 shadow-xl text-slate-900 dark:text-white">
-                    <p className="text-slate-500 dark:text-white/40 text-[10px] font-semibold">{item.day}</p>
+                  <div className="bg-white dark:bg-[#12141C] border border-zinc-200 dark:border-white/[0.08] p-2.5 rounded-lg text-xs space-y-1 shadow-lg text-zinc-900 dark:text-zinc-100">
+                    <p className="text-zinc-400 dark:text-zinc-500 text-[10px] font-mono">{item.day}</p>
                     {hasSpent ? (
-                      <p className="text-emerald-600 dark:text-emerald-400 font-mono font-bold">Gasto Real: ${item.spent}.00</p>
+                      <p className="text-emerald-600 dark:text-emerald-400 font-mono font-medium">
+                        Real: ${item.spent}.00
+                      </p>
                     ) : (
-                      <p className="text-slate-400 font-mono text-[11px] italic">Día futuro (sin registrar)</p>
+                      <p className="text-zinc-400 font-mono text-[11px] italic">Sin proyectar</p>
                     )}
-                    <p className="text-blue-600 dark:text-blue-400 font-mono text-[11px]">Proyectado: ${item.expected}.00</p>
+                    <p className="text-zinc-500 dark:text-zinc-400 font-mono text-[11px]">
+                      Pacing: ${item.expected}.00
+                    </p>
                   </div>
                 );
               }
@@ -106,8 +110,8 @@ export default function CashflowChart({ data }: CashflowChartProps) {
           <Area 
             type="monotone" 
             dataKey="expected" 
-            stroke="#3B82F6" 
-            strokeDasharray="4 4"
+            stroke="#71717a" 
+            strokeDasharray="3 3"
             strokeWidth={1.5} 
             fillOpacity={1} 
             fill="url(#expectedGradient)" 
@@ -116,7 +120,7 @@ export default function CashflowChart({ data }: CashflowChartProps) {
             type="monotone" 
             dataKey="spent" 
             stroke="#10B981" 
-            strokeWidth={3} 
+            strokeWidth={2} 
             connectNulls={false}
             fillOpacity={1} 
             fill="url(#emeraldGradient)" 
@@ -126,3 +130,4 @@ export default function CashflowChart({ data }: CashflowChartProps) {
     </div>
   );
 }
+

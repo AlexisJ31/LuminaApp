@@ -25,7 +25,7 @@ export default function UserLayout({
   unreviewedCount = 3
 }: UserLayoutProps) {
   return (
-    <div className="flex h-screen w-full bg-slate-50 dark:bg-[#080A0F] text-slate-900 dark:text-white selection:bg-emerald-500/20 font-sans antialiased overflow-hidden transition-colors duration-300">
+    <div className="flex h-screen w-full bg-zinc-50 dark:bg-[#090A0F] text-zinc-900 dark:text-zinc-100 font-sans antialiased overflow-hidden transition-colors duration-200">
       
       {/* Sidebar para Pantallas Grandes (Desktop lg) */}
       <Sidebar 
@@ -52,7 +52,7 @@ export default function UserLayout({
           {children}
         </main>
 
-        {/* Navegación Inferior Móvil (Regla del Pulgar con FAB Central) */}
+        {/* Navegación Inferior Móvil */}
         <BottomNav 
           currentTab={currentTab}
           onTabChange={onTabChange}
@@ -65,3 +65,4 @@ export default function UserLayout({
     </div>
   );
 }
+
